@@ -1,0 +1,112 @@
+
+.shop {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: var(--color-cache);
+}
+
+.card {
+    border: 3px solid #919191;
+    background-color: rgb(233, 233, 233);
+    margin: auto 0;
+    height: 80%;
+    width: 8em;
+    position: relative;
+    cursor: pointer;
+}
+
+.selected {
+    border-color: rgb(233, 233, 233);
+    background-color: #919191;
+}
+
+.card > div:first-child {
+    transform:scale(0.7);
+    transform-origin: top;
+}
+
+.card > div:last-child {
+    font-size: 1.1em;
+    margin-top: -30%;
+    text-align: center;
+    position: relative;
+}
+
+.card > div:last-child::after {
+    content: url("../assets/images/coin.png");
+    display: block;
+    position: absolute;
+    right: 5px;
+    top: 2px;
+}
+
+
+.buy {
+    width: 50%;
+    flex-basis: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.buy > .upgrade {
+    display: flex;
+}
+
+
+.buy > .turrets {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.buy > .turrets > .card {
+    margin-right: 1rem;
+}
+
+.data {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.data > div {
+    margin-right: 2rem;
+}
+
+.sold {
+    padding-right: 7px;
+    padding-left: 20px;
+    margin: auto 0;
+    border: 3px solid #919191;
+    background-color: rgb(233, 233, 233);
+    height: 3rem;
+    width: min-content;
+    min-width: 5rem;
+    font-size: 1.5rem;
+    text-align: right;
+    line-height: 3rem;
+    position: relative;
+}
+
+.sold::before {
+    content: url("../assets/images/argents.png");
+    display: block;
+    position: absolute;
+    left: -15px;
+    top: -20px;
+}
+
+.help {
+    border: 3px solid #919191;
+    background-color: rgb(233, 233, 233);
+    margin: auto 0;
+    height: 3rem;
+    width: 3rem;
+    font-size: 2rem;
+    text-align: center;
+    line-height: 3rem;
+    cursor: help;
+}

@@ -1,0 +1,73 @@
+.game-board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.board {
+    margin: 0 auto;
+    height: 95%;
+    width: 85%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.game-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 100%;
+    position: relative;
+}
+
+.board-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.cell {
+    width: 100%;
+    z-index: 1;
+}
+
+.cell > div {
+    margin: 0 auto;
+}
+
+.show .cell {
+    border: 1px solid var(--color-cell);
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.show .cell:hover {
+    background-color: var(--color-cell);
+}
+
+.game-row > div:first-child {
+    width: 15%;
+    z-index: 1;
+}
+
+.path {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    left: 0;
+    top: 70%;
+    width: 100%;
+}
+
+.path > div {
+    width: 100%;
+}
+
+.path > img:last-child {
+    transform: scaleX(-1);
+}
