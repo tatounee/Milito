@@ -1,12 +1,10 @@
 
-mod components;
-mod line;
-mod enemy;
-mod player;
-mod projectile;
-mod turret;
-
-use rayon::prelude::*;
+pub mod components;
+pub mod line;
+pub mod enemy;
+pub mod player;
+pub mod projectile;
+pub mod turret;
 
 use components::Shoot;
 use line::Line;
