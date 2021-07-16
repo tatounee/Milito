@@ -2,7 +2,7 @@
 use std::borrow::Cow;
 
 use super::NBR_OF_LINE;
-use super::components::{CoordX, Damage, Hitbox, Move, Shoot, RangeBox};
+use super::components::{CoordX, Damage, Hitbox, Level, Move, RangeBox, Shoot};
 use super::projectile::Projectile;
 
 const SHOOTING_SPEED: u32 = 50;
@@ -111,6 +111,12 @@ impl Damage for PlayerBullet {
 impl Hitbox for PlayerBullet {
     fn hitbox(&self) -> Cow<RangeBox> {
         Cow::Owned(RangeBox::new(self.x - 1, self.x + 2))
+    }
+}
+
+impl Level for PlayerBullet {
+    fn level(&self) -> u8 {
+        self.level
     }
 }
 

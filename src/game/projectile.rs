@@ -2,9 +2,9 @@
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
-use super::components::{CoordX, Damage, Hitbox, Move};
+use super::components::{CoordX, Damage, Hitbox, Level, Move};
 
-pub trait Projectile: Move + CoordX + Damage + Debug + ProjectileClone + Send + Sync + Hitbox {}
+pub trait Projectile: Move + CoordX + Damage + Debug + ProjectileClone + Send + Sync + Hitbox + Level {}
 
 impl PartialEq for dyn Projectile {
     fn eq(&self, other: &Self) -> bool {

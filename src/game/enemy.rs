@@ -3,9 +3,9 @@ use std::cmp::Ordering;
 use std::fmt::Debug;
 
 use super::projectile::Projectile;
-use super::components::{CoordX, Damage, Hitbox, Life, Move, Shoot};
+use super::components::{CoordX, Damage, Hitbox, Level, Life, Move, Reward, Shoot};
 
-pub trait Enemy: Move + CoordX + Damage + Life + Debug + EnemyClone + Send + Sync + Shoot<Box<dyn Projectile>> + Hitbox {}
+pub trait Enemy: Move + CoordX + Damage + Life + Debug + EnemyClone + Send + Sync + Shoot<Box<dyn Projectile>> + Hitbox + Reward + Level {}
 
 impl PartialEq for dyn Enemy {
     fn eq(&self, other: &Self) -> bool {

@@ -31,6 +31,14 @@ pub trait Shoot<P> {
     fn shoot(&mut self) -> Option<P>;
 }
 
+pub trait Reward {
+    fn reward(&self) -> u32;
+}
+
+pub trait Level {
+    fn level(&self) -> u8;
+}
+
 pub trait Hitbox {
     fn hitbox(&self) -> Cow<RangeBox>;
 }
