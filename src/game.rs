@@ -15,12 +15,17 @@ pub const NBR_OF_LINE: usize = 5;
 pub const NBR_OF_COLUMN: usize = 7;
 pub const BOARD_LENGHT: usize = 120;
 
+pub const GOD_RECHAGE_TIME: u32 = 200;
+pub const GOD_LEVEL_MAX: u32 = 7;
+pub const GOD_CHARGED: u32 = GOD_RECHAGE_TIME * GOD_LEVEL_MAX;
+
 #[derive(Debug)]
 pub struct Game {
     pub lines: Vec<Line>,
     pub money: u32,
     pub player: Player,
-    pub action: Option<ActionOnBoard>
+    pub action: Option<ActionOnBoard>,
+    pub god: u32,
 }
 
 impl Default for Game {
@@ -29,7 +34,8 @@ impl Default for Game {
             lines: vec![Line::default(); NBR_OF_LINE],
             money: 0,
             player: Player::default(),
-            action: None
+            action: None,
+            god: 0,
         }
     }
 }
@@ -69,9 +75,13 @@ impl Game {
     }
 
     pub fn process(&mut self) {
+        if self.god < GOD_CHARGED - 1 {
+            self.god += 1;
+        }
         // PLAYER WAIT
         self.player.wait();
         self.lines.iter_mut().for_each(|line| line.process());
+    }
 
     pub fn kill_all(&mut self) -> bool {
         if self.god == GOD_CHARGED - 1 {
