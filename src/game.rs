@@ -75,6 +75,22 @@ impl Game {
         self.player.wait();
         self.lines.iter_mut().for_each(|line| line.process());
 
+    pub fn kill_all(&mut self) -> bool {
+        if self.god == GOD_CHARGED - 1 {
+            let reward = self.lines.iter_mut().map(|line| {
+                line.kill_all()
+            }).sum::<u32>();
+            self.money += reward;
+            self.god = 0;
+            reward != 0
+        } else {
+            false
+        }
+    }
+
+    #[inline]
+    pub fn god_level(&self) -> u32 {
+        (self.god / GOD_RECHAGE_TIME) + 1
     }
 }
 

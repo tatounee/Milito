@@ -41,6 +41,10 @@ impl Line {
         self.shoots.extend(projectiles.into_iter())
     }
 
+    pub(crate) fn kill_all(&mut self) -> u32 {
+        self.enemies.drain(..).map(|enemy| enemy.reward()).sum()
+    }
+
     pub(crate) fn process(&mut self) {
         self.process_shoots();
 
