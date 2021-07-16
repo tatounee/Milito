@@ -1,5 +1,5 @@
 
-.footer {
+footer {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -16,7 +16,10 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* cursor: pointer; */
+    cursor: pointer;
+}
+
+.god:disabled {
     cursor: not-allowed;
 }
 
@@ -58,6 +61,5 @@
 }
 
 .wave > span {
-    height: 3rem;
     line-height: 3rem;
 }
