@@ -40,8 +40,17 @@ body {
 
 .projectile {
     top: 40%;
+    animation: rotation 0.8s linear infinite;
 }
 
+@keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
 
 /* Sprites image */
 .player-img {
