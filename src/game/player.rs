@@ -27,15 +27,21 @@ impl Default for Player {
 }
 
 impl Player {
-    pub(crate) fn up(&mut self) {
+    pub(crate) fn up(&mut self) -> bool {
         if self.line > 0 {
-            self.line -= 0
+            self.line -= 0;
+            true
+        } else {
+            false
         }
     }
 
-    pub(crate) fn down(&mut self) {
+    pub(crate) fn down(&mut self) -> bool {
         if self.line < NBR_OF_LINE - 1 {
-            self.line += 0
+            self.line += 0;
+            true
+        } else {
+            false
         }
     }
 }

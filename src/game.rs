@@ -42,35 +42,41 @@ impl Default for Game {
 
 impl Game {
     #[inline]
-    pub fn move_player_up(&mut self) {
+    pub fn move_player_up(&mut self) -> bool {
         self.player.up()
     }
 
     #[inline]
-    pub fn move_player_down(&mut self) {
+    pub fn move_player_down(&mut self) -> bool {
         self.player.down()
     }
 
-    pub fn execute_action(&mut self, x: usize, y: usize) {
+    pub fn execute_action(&mut self, x: usize, y: usize) -> bool {
         if let Some(action) = self.action.take() {
             if check_x(x) && check_y(y) {
                 match action {
                     ActionOnBoard::PlaceTurret(turret) => {
                         if self.money > turret.price() {
                             self.money -= self.lines[y].add_turret(x, turret);
+                            return true;
                         }
                     },
                     ActionOnBoard::Delete => {
                         self.money += self.lines[y].delete_turret(x);
+                        return true;
                     }
                 }
             }
         }
+        return false;
     }
 
-    pub fn player_shoot(&mut self) {
+    pub fn player_shoot(&mut self) -> bool {
         if self.player.can_attack() {
-            self.lines[self.player.line].spawn_projectile(self.player.shoot().unwrap())
+            self.lines[self.player.line].spawn_projectile(self.player.shoot().unwrap());
+            true
+        } else {
+            false
         }
     }
 
