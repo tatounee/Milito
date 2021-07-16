@@ -5,4 +5,3 @@ edition = "2018"
 
 [dependencies]
 yew = "0.18"
-rayon = "1.5"

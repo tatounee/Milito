@@ -73,8 +73,8 @@ impl Game {
     pub fn process(&mut self) {
         // PLAYER WAIT
         self.player.wait();
+        self.lines.iter_mut().for_each(|line| line.process());
 
-        self.lines.par_iter_mut().for_each(|line| line.process())
     }
 }
 
