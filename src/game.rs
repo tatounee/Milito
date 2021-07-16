@@ -32,7 +32,7 @@ impl Default for Game {
     fn default() -> Self {
         Self {
             lines: vec![Line::default(); NBR_OF_LINE],
-            money: 0,
+            money: 9999999,
             player: Player::default(),
             action: None,
             god: 0,
