@@ -35,7 +35,9 @@
     z-index: 3;
     background-color: transparent;
     border: 1px solid transparent;
+    position: relative;
 }
+
 
 .cell > div {
     margin: 0 auto;
@@ -45,6 +47,10 @@
     border: 1px solid var(--color-cell);
     background-color: transparent;
     cursor: pointer;
+}
+
+.show .cell:disabled {
+    cursor: not-allowed;
 }
 
 .show .cell:hover {

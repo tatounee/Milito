@@ -32,21 +32,32 @@ footer {
 .info {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    width: 20%;
+    justify-content: flex-end;
+    width: 30%;
 }
 
-.trashcan {
+.info-button {
     border: 3px solid #919191;
     background-color: rgb(233, 233, 233);
     margin: auto 0;
-    height: 3rem;
-    width: 3rem;
-    font-size: 2rem;
-    line-height: 3rem;
+    margin-right: 1rem;
+    height: calc(3rem + 6px);
+    width: calc(3rem + 6px);
+    font-size: 1.5rem;
+    line-height: 2.5rem;
     text-align: center;
     cursor: pointer;
     user-select: none;
+}
+
+.info-button:active {
+    border-color: rgb(233, 233, 233) !important;
+    background-color: #919191 !important;
+}
+
+.info-button:disabled {
+    background-color: #919191 !important;
+    cursor: not-allowed !important;
 }
 
 .wave {

@@ -1,5 +1,4 @@
-
-use yew::{prelude::*, html::ChildrenWithProps};
+use yew::{html::ChildrenWithProps, prelude::*};
 
 use super::game_row::GameRow;
 
@@ -10,7 +9,7 @@ pub struct Board {
 #[derive(Debug, Properties, PartialEq, Clone)]
 pub struct BoardProps {
     pub show_grid: bool,
-    pub children: ChildrenWithProps<GameRow>
+    pub children: ChildrenWithProps<GameRow>,
 }
 
 impl Component for Board {
@@ -35,7 +34,6 @@ impl Component for Board {
     }
 
     fn view(&self) -> Html {
-
         let board_classes = format!("board {}", if self.props.show_grid { "show" } else { "" });
 
         html! {

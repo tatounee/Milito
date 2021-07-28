@@ -1,4 +1,3 @@
-
 :root {
     --color-cache: #a1a1a14f;
     --color-cell: #8b8b8b5b;
@@ -7,6 +6,8 @@
 * {
     color: #1a1a1a;
     font-family: Cascadia;
+    margin: 0;
+    padding: 0;
 }
 
 html, body {
@@ -35,36 +36,43 @@ body {
 
 .free {
     position: absolute;
-    z-index: 2;
 }
 
 .projectile {
-    top: 40%;
-    animation: rotation 0.8s linear infinite;
+    top: 30%;
+    animation: rotation 1s linear infinite;
 }
 
 @keyframes rotation {
     from {
-      transform: rotate(0deg);
+        transform: rotate(0deg);
     }
     to {
-      transform: rotate(359deg);
+        transform: rotate(359deg);
     }
-  }
+}
+
+.selected {
+    border-color: rgb(233, 233, 233) !important;
+    background-color: #919191 ! important;
+}
 
 /* Sprites image */
+
 .player-img {
     background-image: url("../assets/images/player.png");
     background-repeat: no-repeat;
     width: 128px;
     height: 128px;
 }
+
 .player-upgrade-img {
     background-image: url("../assets/images/upgrade.png");
     background-repeat: no-repeat;
     width: 128px;
     height: 128px;
 }
+
 .player-projectile-img {
     background-image: url("../assets/images/player_projectile.png");
     background-repeat: no-repeat;
@@ -77,6 +85,7 @@ body {
     background-repeat: no-repeat;
     width: 128px;
     height: 128px;
+    top: -10px;
 }
 
 .god-img {
@@ -86,13 +95,13 @@ body {
     height: 64px;
 }
 
-.enemies-img {
+.enemy-img {
     background-image: url("../assets/images/enemies.png");
     background-repeat: no-repeat;
     width: 128px;
     height: 128px;
+    z-index: 2;
 }
-
 
 .projectile-img {
     background-image: url("../assets/images/turrets_projectiles.png");
@@ -104,26 +113,82 @@ body {
 .laser-img {
     background-image: url("../assets/images/laser_center.png");
     height: 32px;
+    animation: move-y 1s steps(16) infinite;
+}
+
+@keyframes move-y {
+    from {
+        background-position-y: 0px;
+    }
+    to {
+        background-position-y: -512px;
+    }
 }
 
 /* Strites level */
+
 /* 128 */
-.level1-128 { background-position: 0 0 }
-.level2-128 { background-position: 0 -128px }
-.level3-128 { background-position: 0 -256px }
-.level4-128 { background-position: 0 -384px }
+
+.level1-128 {
+    background-position: 0 0
+}
+
+.level2-128 {
+    background-position: 0 -128px
+}
+
+.level3-128 {
+    background-position: 0 -256px
+}
+
+.level4-128 {
+    background-position: 0 -384px
+}
 
 /* 64 */
-.level1-64 { background-position: 0 0 }
-.level2-64 { background-position: 0 -64px }
-.level3-64 { background-position: 0 -128px }
-.level4-64 { background-position: 0 -192px }
-.level5-64 { background-position: 0 -256px }
-.level6-64 { background-position: 0 -320px }
-.level7-64 { background-position: 0 -384px }
+
+.level1-64 {
+    background-position: 0 0
+}
+
+.level2-64 {
+    background-position: 0 -64px
+}
+
+.level3-64 {
+    background-position: 0 -128px
+}
+
+.level4-64 {
+    background-position: 0 -192px
+}
+
+.level5-64 {
+    background-position: 0 -256px
+}
+
+.level6-64 {
+    background-position: 0 -320px
+}
+
+.level7-64 {
+    background-position: 0 -384px
+}
 
 /* 32 */
-.level1-32 { background-position: 0 0 }
-.level2-32 { background-position: 0 -32px }
-.level3-32 { background-position: 0 -64px }
-.level4-32 { background-position: 0 -96px }
+
+.level1-32 {
+    background-position: 0 0
+}
+
+.level2-32 {
+    background-position: 0 -32px
+}
+
+.level3-32 {
+    background-position: 0 -64px
+}
+
+.level4-32 {
+    background-position: 0 -96px
+}

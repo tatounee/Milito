@@ -1,4 +1,8 @@
+use std::cell::RefCell;
+
 use yew::prelude::*;
+
+use crate::game::{enemy::Enemy, projectile::Projectile};
 
 pub struct GameRow {
     link: ComponentLink<Self>,
@@ -7,15 +11,18 @@ pub struct GameRow {
 
 #[derive(Debug, Properties, PartialEq, Clone)]
 pub struct GameRowProps {
-    pub player: Option<usize>,
+    pub player_level: Option<u8>,
     pub cells: Vec<Option<u8>>,
     pub execute_action: Callback<(usize, usize)>,
     pub y: usize,
     pub show_grid: bool,
+    pub delete_mode: bool,
+    pub projectiles: RefCell<Vec<Projectile>>,
+    pub enemies: RefCell<Vec<Enemy>>,
 }
 
 pub enum Msg {
-    ExectuteAction(usize)
+    ExectuteAction(usize),
 }
 
 impl Component for GameRow {
@@ -37,14 +44,15 @@ impl Component for GameRow {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::ExectuteAction(x) => self.props.execute_action.emit((x, self.props.y))
+            Msg::ExectuteAction(x) => self.props.execute_action.emit((x, self.props.y)),
         }
         false
     }
 
     fn view(&self) -> Html {
-        let player = if let Some(level) = self.props.player {
-            let player_classes = format!("player-img level{}-128", level);
+        // TODO: don't disaeble is delete_mode 
+        let player = if let Some(level) = self.props.player_level {
+            let player_classes = format!("player-img level{}-128 free", level);
             html_nested!(
                 <div class=classes!(player_classes)/>
             )
@@ -62,19 +70,31 @@ impl Component for GameRow {
                     <div class="laser-img"></div>
                     <img src="assets/images/laser_balise.png" alt="balise" />
                 </div>
+                { for self.props.projectiles.borrow().iter().map(|proj| {
+                    let projectile_classes = format!("projectile-img level{}-32 free projectile", proj.level());
+                    let projectile_pos = format!("left: {}%", proj.x());
+                    html_nested! {
+                        <div class=classes!(projectile_classes) style=projectile_pos/>
+                    }
+                }) }
+                { for self.props.enemies.borrow().iter().map(|enemy| {
+                    let enemy_classes = format!("enemy-img level{}-128 free", enemy.level());
+                    let enemy_pos = format!("left: {}%", enemy.x());
+                    html_nested! {
+                        <div class=classes!(enemy_classes) style=enemy_pos/>
+                    }
+                }) }
                 <div class="board-row">
                     { for self.props.cells.iter().enumerate().map(|(x, turret)| {
-                        let turret = if let Some(level) = turret {
-                            let turret_classes = format!("turret-img level{}-128", level);
+                        let turret = turret.map(|level| {
+                            let turret_classes = format!("turret-img level{}-128 free", level);
                             html_nested!(
-                                <div class=classes!(turret_classes)></div>
-                            )
-                        } else {
-                            html_nested!()
-                        };
+                                <div class=classes!(turret_classes) />
+                            )  
+                        });
                         html_nested!(
-                            <button class="cell" onclick=self.link.callback(move |_| Msg::ExectuteAction(x)) disabled=!self.props.show_grid>
-                                { turret }
+                            <button class="cell" onclick=self.link.callback(move |_| Msg::ExectuteAction(x)) disabled=!self.props.show_grid || (turret.is_some() && !self.props.delete_mode)>
+                                { turret.unwrap_or(html_nested!()) }
                             </button>
                         )
                     }) }

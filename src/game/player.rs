@@ -1,18 +1,20 @@
 
-use std::borrow::Cow;
+use std::rc::Rc;
 
-use super::NBR_OF_LINE;
-use super::components::{CoordX, Damage, Hitbox, Level, Move, RangeBox, Shoot};
+use crate::log;
+use crate::FPS;
 use super::projectile::Projectile;
+use super::NBR_OF_LINE;
 
-const SHOOTING_SPEED: u32 = 50;
+const PLAYER_MAX_LEVEL: u8 = 4;
 
 #[derive(Debug)]
 pub struct Player {
-    pub level: u8,
-    pub line: usize,
+    pub(crate) level: u8,
+    pub(crate) line: usize,
     shooting_speed: u32,
     waiting: u32,
+    upgrade_cost_text: Rc<String>
 }
 
 impl Default for Player {
@@ -20,14 +22,40 @@ impl Default for Player {
         Self {
             level: 1,
             line: 0,
-            shooting_speed: SHOOTING_SPEED,
+            shooting_speed: 5 * FPS as u32,
             waiting: 0,
+            upgrade_cost_text: Rc::new("1000".to_owned())
         }
     }
 }
 
 impl Player {
-    pub(crate) fn up(&mut self) -> bool {
+    #[inline]
+    pub fn upgrade_cost_text(&self) -> Rc<String> {
+        self.upgrade_cost_text.clone()
+    }
+
+    #[inline]
+    pub fn upgrade_cost(&self) -> u32 {
+        self.level as u32 * 1000
+    }
+
+    pub fn upgrade(&mut self) -> bool {
+        if self.level < PLAYER_MAX_LEVEL {
+            self.level += 1;
+
+            self.upgrade_cost_text = if self.level < PLAYER_MAX_LEVEL {
+                Rc::new(self.upgrade_cost().to_string())
+            } else {
+                Rc::new("---".to_owned())
+            };
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn up(&mut self) -> bool {
         if self.line > 0 {
             self.line -= 0;
             true
@@ -36,7 +64,7 @@ impl Player {
         }
     }
 
-    pub(crate) fn down(&mut self) -> bool {
+    pub fn down(&mut self) -> bool {
         if self.line < NBR_OF_LINE - 1 {
             self.line += 0;
             true
@@ -44,86 +72,26 @@ impl Player {
             false
         }
     }
-}
 
-impl Shoot<Box<PlayerBullet>> for Player {
-    fn can_attack(&self) -> bool {
+    #[inline]
+    pub fn can_attack(&self) -> bool {
         self.waiting == 0
     }
 
-    fn wait(&mut self) {
+    #[inline]
+    pub fn wait(&mut self) {
         if self.waiting != 0 {
             self.waiting -= 1
         }
     }
 
-    fn shoot(&mut self) -> Option<Box<PlayerBullet>> {
+    #[inline]
+    pub fn shoot(&mut self) -> Option<Projectile> {
         if self.can_attack() {
             self.waiting = self.shooting_speed;
-            Some(Box::new(PlayerBullet::new(
-                self.level,
-                self.level as i32 * 2,
-                self.level as u32 * 2,
-            )))
+            Some(Projectile::new_player_projectile(self.level))
         } else {
             None
         }
     }
 }
-
-#[derive(Debug, Clone)]
-pub struct PlayerBullet {
-    level: u8,
-    x: u32,
-    speed: i32,
-    damage: u32,
-}
-
-impl PlayerBullet {
-    pub fn new(level: u8, speed: i32, damage: u32) -> Self {
-        Self {
-            level,
-            x: 0,
-            speed,
-            damage,
-        }
-    }
-}
-
-impl CoordX for PlayerBullet {
-    #[inline]
-    fn x(&self) -> u32 {
-        self.x
-    }
-}
-
-
-impl Move for PlayerBullet {
-    fn deplace(&mut self) {
-        if self.speed.is_positive() {
-            self.x += self.speed as u32
-        } else {
-            self.x = self.x.saturating_sub(self.speed.abs() as u32);
-        }
-    }
-}
-
-impl Damage for PlayerBullet {
-    fn damage(&self) -> u32 {
-        self.damage
-    }
-}
-
-impl Hitbox for PlayerBullet {
-    fn hitbox(&self) -> Cow<RangeBox> {
-        Cow::Owned(RangeBox::new(self.x - 1, self.x + 2))
-    }
-}
-
-impl Level for PlayerBullet {
-    fn level(&self) -> u8 {
-        self.level
-    }
-}
-
-impl Projectile for PlayerBullet {}
