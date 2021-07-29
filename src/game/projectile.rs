@@ -11,7 +11,7 @@ pub struct Projectile {
     level: u8,
     speed: f32,
     hitbox: RangeBox,
-    expose: bool,
+    from_player: bool,
 }
 
 impl Projectile {
@@ -30,14 +30,19 @@ impl Projectile {
         self.level
     }
 
+    #[inline]
+    pub fn from_player(&self) -> bool {
+        self.from_player
+    }
+
     pub fn new_player_projectile(level: u8) -> Self {
         Self {
-            x: 0.,
-            damage: (level * 2) as u32,
+            x: 4.,
+            damage: (level as u32).pow(2) * 10 + 10,
             level,
             speed: level as f32 * 1.5,
             hitbox: RangeBox::new(-1, 2),
-            expose: false,
+            from_player: true,
         }
     }
 
@@ -49,7 +54,7 @@ impl Projectile {
                 damage: 30,
                 speed: 50. / FPS as f32,
                 hitbox: RangeBox::new(1, 2),
-                expose: false,
+                from_player: false,
             }),
             2 => Some(Self {
                 x,
@@ -57,7 +62,7 @@ impl Projectile {
                 damage: 90,
                 speed: 35. / FPS as f32,
                 hitbox: RangeBox::new(1, 2),
-                expose: true,
+                from_player: false,
             }),
             _ => None,
         }

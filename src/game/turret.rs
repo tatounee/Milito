@@ -30,10 +30,10 @@ impl Turret {
                 price_text: Rc::new("100".to_owned()),
                 level,
                 shoot: true,
-                life: 200,
-                hitbox: RangeBox::new(-3, 7),
+                life: 120,
+                hitbox: RangeBox::new(1, 7),
                 waiting: 0.,
-                attack_waiting: 1.8 * FPS as f32,
+                attack_waiting: 1.8 * FPS as f32, // 30 dmg
             }),
             2 => Some(Self {
                 x: 0.,
@@ -41,10 +41,10 @@ impl Turret {
                 price_text: Rc::new("300".to_owned()),
                 level,
                 shoot: true,
-                life: 200,
-                hitbox: RangeBox::new(-3, 7),
+                life: 120,
+                hitbox: RangeBox::new(1, 7),
                 waiting: 0.,
-                attack_waiting: 2.5 * FPS as f32,
+                attack_waiting: 2.5 * FPS as f32, // 90 dmg
             }),
             3 => Some(Self {
                 x: 0.,
@@ -53,7 +53,7 @@ impl Turret {
                 level,
                 shoot: false,
                 life: 10000,
-                hitbox: RangeBox::new(-4, 8),
+                hitbox: RangeBox::new(2, 8),
                 waiting: 0.,
                 attack_waiting: 0.,
             }),
@@ -62,14 +62,14 @@ impl Turret {
     }
 
     #[inline]
-    pub fn set_x(mut self, x: f32) -> Self {
-        self.x = x;
-        self
+    pub fn x(&self) -> f32 {
+        self.x
     }
 
     #[inline]
-    pub fn x(&self) -> f32 {
-        self.x
+    pub fn set_x(mut self, x: f32) -> Self {
+        self.x = x;
+        self
     }
 
     #[inline]

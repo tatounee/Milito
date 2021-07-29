@@ -5,9 +5,14 @@ use super::components::Collide;
 use super::enemy::Enemy;
 use super::projectile::Projectile;
 use super::turret::Turret;
-use super::{BOARD_LENGHT, NBR_OF_COLUMN};
+use super::{BOARD_LENGHT, NBR_OF_COLUMN, Reward};
 use super::wave::{IteratorWaveLine, WaveLine};
 use crate::log;
+
+fn is_enemies_in_front(coord: &[f32], x: f32) -> bool {
+    coord.iter().any(|coord| &x <= coord && coord < &(12. * 8.))
+}
+
 
 #[derive(Debug, Clone)]
 pub struct Line {
@@ -15,6 +20,7 @@ pub struct Line {
     pub projectiles: RefCell<Vec<Projectile>>,
     pub enemies: RefCell<Vec<Enemy>>,
     pub waves: RefCell<VecDeque<WaveLine>>,
+    nbr_of_wave: usize,
     current_wave: Option<RefCell<IteratorWaveLine>>,
 }
 
@@ -37,15 +43,29 @@ impl Line {
         price
     }
 
+    #[inline]
+    pub fn set_waves(&mut self, waves: RefCell<VecDeque<WaveLine>>) {
+        self.nbr_of_wave = waves.borrow().len();
+        self.waves = waves;
+    }
+
+    #[inline]
+    pub fn wave(&self) -> usize {
+        self.nbr_of_wave - self.waves.borrow().len()
+    }
+
+    #[inline]
     pub fn spawn_projectile(&mut self, projectile: Projectile) {
         self.projectiles.borrow_mut().push(projectile)
     }
 
+    #[inline]
     pub fn spawn_projectiles<I: IntoIterator<Item = Projectile>>(&mut self, projectiles: I) {
         self.projectiles.borrow_mut().extend(projectiles.into_iter())
     }
 
-    pub fn kill_all(&mut self) -> u32 {
+    #[inline]
+    pub fn kill_all(&mut self) -> Reward {
         self.enemies
             .borrow_mut()
             .drain(..)
@@ -53,11 +73,13 @@ impl Line {
             .sum()
     }
 
+    #[inline]
     pub fn next_wave(&mut self) -> Option<()> {
         self.current_wave = Some(RefCell::new(self.waves.borrow_mut().pop_front()?.into_iter()));
         Some(())
     }
 
+    #[inline]
     pub fn is_wave_ended(&self) -> bool {
         if let Some(wave) = &self.current_wave {
             wave.borrow().is_ended()
@@ -66,27 +88,36 @@ impl Line {
         }
     }
 
-    pub fn remaining_enemies(&self) -> bool {
+    #[inline]
+    pub fn is_remaining_enemies(&self) -> bool {
         !self.enemies.borrow().is_empty()
     }
 
-    pub fn process(&mut self) {
-        self.process_projectiles();
+    #[inline]
+    fn enemies_coord(&self) -> Vec<f32> {
+        self.enemies.borrow().iter().map(|e| e.x()).collect::<Vec<f32>>()
+    }
 
-        self.process_enemies();
+    pub fn process(&mut self) -> (Reward, bool) {
+        let reward = self.process_projectiles();
+
+        let defeat = self.process_enemies();
 
         self.process_turrets();
 
         self.spawn_new_enemies();
+
+        (reward, defeat)
     }
 
     fn process_turrets(&mut self) {
         let mut shoots_buf = Vec::with_capacity(7);
+        let enemies_coord = self.enemies_coord();
         self.cells.iter_mut().for_each(|turret| {
             if let Some(turret) = turret {
                 // TURRET WAIT
                 turret.wait();
-                if turret.can_attack() {
+                if turret.can_attack() && is_enemies_in_front(&enemies_coord, turret.x()) {
                     shoots_buf.push(turret.shoot().unwrap())
                 }
             }
@@ -94,10 +125,10 @@ impl Line {
         self.spawn_projectiles(shoots_buf);
     }
 
-    fn process_projectiles(&mut self) {
-        // TODO: delete proj out
+    fn process_projectiles(&mut self) -> Reward {
         let mut attack_buf = Vec::new();
         let mut proj_buf = Vec::new();
+        let mut reward = 0;
         {
             let bren = self.enemies.borrow();
             let mut enemies = bren.iter();
@@ -106,7 +137,7 @@ impl Line {
                 .iter_mut()
                 .enumerate()
                 .for_each(|(proj_index, proj)| {
-                    if enemies.by_ref().enumerate().all(|(enemy_index, enemy)| {
+                    if enemies.by_ref().clone().enumerate().all(|(enemy_index, enemy)| {
                         if enemy.collide(proj) {
                             attack_buf.push((proj_index, enemy_index));
                             proj_buf.push(proj_index);
@@ -115,10 +146,10 @@ impl Line {
                             true
                         }
                     }) {
-                        proj.deplace()
-                    }
-                    if proj.x() > BOARD_LENGHT as f32 {
-                        proj_buf.push(proj_index)
+                        proj.deplace();
+                        if proj.x() > BOARD_LENGHT as f32 {
+                            proj_buf.push(proj_index)
+                        }
                     }
                 });
         }
@@ -139,18 +170,21 @@ impl Line {
             }
         }
         for dead_index in dead_enemies {
-            self.enemies.borrow_mut().remove(dead_index);
+            reward += self.enemies.borrow_mut().remove(dead_index).reward();
         }
 
         let mut projectiles = self.projectiles.borrow_mut();
         for index in proj_buf {
             projectiles.remove(index);
         }
+
+        reward
     }
 
-    fn process_enemies(&mut self) {
+    fn process_enemies(&mut self) -> bool {
         let mut attack_buf = Vec::new();
         let mut cells = self.cells.iter();
+        let mut defeat = false;
         self.enemies
             .borrow_mut()
             .iter_mut()
@@ -170,7 +204,10 @@ impl Line {
                         true
                     }
                 }) {
-                    enemy.deplace()
+                    enemy.deplace();
+                    if enemy.x() < -5. {
+                        defeat = true;
+                    }
                 }
             });
         let mut dead_turrets = Vec::new();
@@ -188,6 +225,8 @@ impl Line {
         for dead_index in dead_turrets {
             self.cells[dead_index] = None;
         }
+
+        defeat
     }
 
     fn spawn_new_enemies(&mut self) {
@@ -206,6 +245,7 @@ impl Default for Line {
             projectiles: RefCell::new(Vec::new()),
             enemies: RefCell::new(Vec::new()),
             waves: RefCell::new(VecDeque::new()),
+            nbr_of_wave: 0,
             current_wave: None,
         }
     }

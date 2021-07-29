@@ -1,8 +1,6 @@
 
 use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
-
 use super::enemy::Enemy;
 
 // Exemple:
@@ -28,7 +26,7 @@ macro_rules! wave {
     };
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Clone)]
 pub struct Wave {
     pub troops: HashMap<u64, Vec<u8>>,
 }

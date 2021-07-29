@@ -20,6 +20,8 @@ use turret::Turret;
 use self::wave::{Wave, WaveLine};
 use crate::{FPS, log};
 
+pub type Reward = u32;
+
 pub const NBR_OF_LINE: usize = 5;
 pub const NBR_OF_COLUMN: usize = 7;
 pub const BOARD_LENGHT: f32 = 110.;
@@ -53,6 +55,7 @@ pub struct Game {
     pub action: Option<ActionOnBoard>,
     pub waves: VecDeque<Wave>,
     pub god: u32,
+    pub defeat: bool,
     turret_list: Rc<Vec<Rc<Turret>>>,
 }
 
@@ -60,11 +63,12 @@ impl Default for Game {
     fn default() -> Self {
         Self {
             lines: vec![Line::default(); NBR_OF_LINE],
-            money: 9999999,
+            money: 0,
             player: Player::default(),
             action: None,
             god: 1,
             waves: VecDeque::new(),
+            defeat: false,
             turret_list: Rc::new(vec![
                 Rc::new(Turret::prefab_turret(1).unwrap()),
                 Rc::new(Turret::prefab_turret(2).unwrap()),
@@ -81,12 +85,12 @@ impl Game {
     }
 
     #[inline]
-    pub fn move_player_up(&mut self) -> bool {
+    pub fn move_player_up(&mut self) {
         self.player.up()
     }
 
     #[inline]
-    pub fn move_player_down(&mut self) -> bool {
+    pub fn move_player_down(&mut self) {
         self.player.down()
     }
 
@@ -107,6 +111,11 @@ impl Game {
         matches!(self.action, Some(ActionOnBoard::Delete))
     }
 
+    #[inline]
+    pub fn wave(&self) -> usize {
+        self.lines[0].wave()
+    }
+
     // Return true if there is not more wave
     #[inline]
     pub fn next_wave(&mut self) -> bool {
@@ -117,6 +126,11 @@ impl Game {
             .iter()
             .all(|opt| opt.is_none())
     }
+    
+    #[inline]
+    fn is_wave_running(&self) -> bool {
+        self.lines.iter().any(|l| !l.is_wave_ended())
+    }
 
     #[inline]
     pub fn is_wave_ended(&self) -> bool {
@@ -124,8 +138,8 @@ impl Game {
     }
 
     #[inline]
-    pub fn remaining_enemies(&self) -> bool {
-        self.lines.iter().any(|line| line.remaining_enemies())
+    pub fn is_remaining_enemies(&self) -> bool {
+        self.lines.iter().any(|line| line.is_remaining_enemies())
     }
 
     pub fn enemy_wave_assign_line(&mut self) {
@@ -155,7 +169,14 @@ impl Game {
         self.lines
             .iter_mut()
             .zip(wave_packs.into_iter())
-            .for_each(|(line, wave)| line.waves = RefCell::new(wave));
+            .for_each(|(line, wave)| line.set_waves(RefCell::new(wave)));
+    }
+
+    pub fn can_execut_action(&self, action: &ActionOnBoard) -> bool {
+        match action {
+            &ActionOnBoard::PlaceTurret(ref turret) => self.money >= turret.price(),
+            &ActionOnBoard::Delete => true
+        }
     }
 
     pub fn execute_action(&mut self, x: usize, y: usize) -> bool {
@@ -163,7 +184,7 @@ impl Game {
             if check_x(x) && check_y(y) {
                 match action {
                     ActionOnBoard::PlaceTurret(turret) => {
-                        if self.money > turret.price() {
+                        if self.money >= turret.price() {
                             self.money -= self.lines[y].add_turret(x, turret);
                             return true;
                         }
@@ -178,35 +199,34 @@ impl Game {
         return false;
     }
 
-    pub fn upgrade_player(&mut self) -> bool {
+    pub fn upgrade_player(&mut self) {
         let upgrade_cost = self.player.upgrade_cost();
         if self.money >= upgrade_cost {
             if self.player.upgrade() {
                 
                 self.money -= upgrade_cost;
-                log!("player level", self.player.level);
-                return true;
             }
         }
-        false
     }
 
-    pub fn player_shoot(&mut self) -> bool {
+    pub fn player_shoot(&mut self) {
         if self.player.can_attack() {
             self.lines[self.player.line].spawn_projectile(self.player.shoot().unwrap());
-            true
-        } else {
-            false
         }
     }
 
     pub fn process(&mut self) {
-        if self.god < GOD_CHARGED {
+        if self.god < GOD_CHARGED && self.is_wave_running() {
             self.god += 1;
         }
         // PLAYER WAIT
         self.player.wait();
-        self.lines.iter_mut().for_each(|line| line.process());
+        let result = self.lines.iter_mut().map(|line| line.process()).collect::<Vec<(u32, bool)>>();
+
+        let reward = result.iter().map(|r| r.0).sum::<u32>();
+        self.money += reward;
+        
+        self.defeat = result.iter().any(|r| r.1);
     }
 
     pub fn kill_all(&mut self) -> bool {

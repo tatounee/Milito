@@ -10,7 +10,7 @@ pub struct Footer {
 #[derive(Debug, Properties, Clone, PartialEq)]
 pub struct FooterProps {
     pub god_level: u32,
-    pub wave: u32,
+    pub wave: usize,
     pub delete_mode: bool,
     pub active_god: Callback<()>,
     pub toggle_delete_mode: Callback<()>,

@@ -1,17 +1,16 @@
 
 use std::cmp::Ordering;
 
-use serde::{Deserialize, Serialize};
-
 use crate::log;
 use super::BOARD_LENGHT;
 use super::projectile::Projectile;
 use super::components::{Collide, RangeBox};
 use crate::FPS;
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone)]
 pub struct Enemy {
     life: u32,
+    max_life: f32,
     x: f32,
     damage: u32,
     level: u8,
@@ -25,51 +24,27 @@ pub struct Enemy {
 impl Enemy {
     pub fn prefab(level: u8) -> Option<Self> {
         match level {
-            1 => Some(Self {
-                life: 80,
-                x: BOARD_LENGHT as f32,
-                damage: 35,
-                level,
-                reward: 10,
-                speed: -2. / FPS as f32,
-                hitbox: RangeBox::new(3, 8),
-                waiting: 0.,
-                attack_waiting: 1.2 * FPS as f32
-            }),
-            2 => Some(Self{
-                life: 200,
-                x: BOARD_LENGHT as f32,
-                damage: 40,
-                level,
-                reward: 20,
-                speed: -1.2 / FPS as f32,
-                hitbox: RangeBox::new(3, 7),
-                waiting: 0.,
-                attack_waiting: 1.8 * FPS as f32
-            }),
-            3 => Some(Self {
-                life: 30,
-                x: BOARD_LENGHT as f32,
-                damage: 20,
-                level,
-                reward: 15,
-                speed: -3.5 / FPS as f32,
-                hitbox: RangeBox::new(-1, 10),
-                waiting: 0.,
-                attack_waiting: 0.8 * FPS as f32,
-            }),
-            4 => Some(Self {
-                life: 500,
-                x: BOARD_LENGHT as f32,
-                damage: 100,
-                level,
-                reward: 50,
-                speed: -0.8 / FPS as f32,
-                hitbox: RangeBox::new(-3, 15),
-                waiting: 0.,
-                attack_waiting: 2. * FPS as f32,
-            }),
+            1 => Some(Self::new(80, 35, 1, 10, -2., RangeBox::new(-2, 8), 1.2)),
+            2 => Some(Self::new(200, 40, 2, 20, -1.2, RangeBox::new(-3, 7), 1.5)),
+            3 => Some(Self::new(30, 20, 3, 15, -3.5, RangeBox::new(0, 10), 0.8)),
+            4 => Some(Self::new(2000, 300, 4, 50, -0.8, RangeBox::new(3, 15), 1.8)),
             _ => None
+        }
+    }
+
+    #[inline]
+    pub fn new(life: u32, damage: u32, level: u8, reward: u32, speed: f32, hitbox: RangeBox, attack_waiting: f32) -> Self {
+        Self {
+            life,
+            max_life: life as f32,
+            x: BOARD_LENGHT as f32,
+            damage,
+            level,
+            reward,
+            speed: speed / FPS as f32,
+            hitbox,
+            waiting: 0.,
+            attack_waiting: attack_waiting * FPS as f32
         }
     }
 
@@ -86,6 +61,12 @@ impl Enemy {
     #[inline]
     pub fn reward(&self) -> u32 {
         self.reward
+    }
+
+    #[inline]
+    pub fn scale(&self) -> f32 {
+        let x = self.life as f32 / self.max_life;
+        1. / -10f32.powf(1.7 * (x + 0.1)) + 1.
     }
 
     #[inline]
@@ -109,11 +90,6 @@ impl Enemy {
     #[inline]
     pub fn get_hitbox(&self) -> RangeBox {
         self.hitbox.clone() + self.x as i32
-    }
-
-    #[inline]
-    pub fn get_life(&self) -> u32 {
-        self.life
     }
 
     #[inline]

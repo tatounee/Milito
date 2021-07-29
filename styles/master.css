@@ -100,7 +100,7 @@ body {
     background-repeat: no-repeat;
     width: 128px;
     height: 128px;
-    z-index: 2;
+    z-index: 3;
 }
 
 .projectile-img {

@@ -22,9 +22,9 @@ impl Default for Player {
         Self {
             level: 1,
             line: 0,
-            shooting_speed: 5 * FPS as u32,
+            shooting_speed: 3 * FPS as u32,
             waiting: 0,
-            upgrade_cost_text: Rc::new("1000".to_owned())
+            upgrade_cost_text: Rc::new("500".to_owned())
         }
     }
 }
@@ -37,7 +37,7 @@ impl Player {
 
     #[inline]
     pub fn upgrade_cost(&self) -> u32 {
-        self.level as u32 * 1000
+        self.level as u32 * 500
     }
 
     pub fn upgrade(&mut self) -> bool {
@@ -55,21 +55,15 @@ impl Player {
         }
     }
 
-    pub fn up(&mut self) -> bool {
+    pub fn up(&mut self) {
         if self.line > 0 {
-            self.line -= 0;
-            true
-        } else {
-            false
+            self.line -= 1;
         }
     }
 
-    pub fn down(&mut self) -> bool {
+    pub fn down(&mut self) {
         if self.line < NBR_OF_LINE - 1 {
-            self.line += 0;
-            true
-        } else {
-            false
+            self.line += 1;
         }
     }
 

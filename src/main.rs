@@ -1,15 +1,22 @@
-#![allow(dead_code)]
 
 mod components;
 mod game;
 mod utils;
-mod input_handler;
 
 use std::time::Duration;
 
 use yew::{
-    prelude::*,
-    services::{IntervalService, Task},
+    prelude::*, 
+    services::{
+        IntervalService,
+        DialogService,
+        Task, 
+        keyboard::{
+            KeyListenerHandle, 
+            KeyboardService
+        }
+    },
+    utils::window,
 };
 use lazy_static::lazy_static;
 
@@ -20,45 +27,213 @@ use crate::components::{Board, GameRow, GameRowProps};
 
 lazy_static! {
     static ref WAVE_1: Wave = wave![
-        1 => [1, 1],
-        2 => [1, 1],
-        3 => [1, 1, 1],
-        4 => [1],
-        5 => [1, 1]
+        0 => [1],
+        12 => [1],
+        25 => [1],
+        30 => [1],
     ];
 
     static ref WAVE_2: Wave = wave![
-        0 => [1, 1, 2],
-        2 => [2],
-        4 => [2, 1],
-        6 => [3, 1, 1]
+        0 => [1, 1],
+        15 => [1],
+        25 => [1],
+        30 => [1],
+        47 => [1, 1],
     ];
 
     static ref WAVE_3: Wave = wave![
-        1 => [2, 2],
-        2 => [3],
-        3 => [3],
-        4 => [1, 1, 1, 1],
-        5 => [1, 1, 1, 1],
-        6 => [4],
+        0 => [2],
+        15 => [1],
+        25 => [1],
+        35 => [1, 1],
+        40 => [1],
+        50 => [1],
+        55 => [2, 1],
+        60 => [1, 1, 1, 1],
+        65 => [2, 2],
     ];
 
-    static ref WAVE_TEST: Wave = wave![
+    static ref WAVE_4: Wave = wave![
+        0 => [1, 1],
+        5 => [1],
+        15 => [3],
+        25 => [1, 1],
+        35 => [2, 1],
+        40 => [1],
+        50 => [2, 3],
+    ];
+    
+    static ref WAVE_5: Wave = wave![
+        0 => [3, 3],
+        10 => [1, 1, 1],
+        20 => [2],
+        25 => [1, 1],
+        35 => [3, 1],
+        45 => [2],
+        60 => [1, 1, 1, 1, 1],
+    ];
+
+    static ref WAVE_6: Wave = wave![
+        0 => [2, 1],
+        10 => [2, 2],
+        20 => [3],
+        25 => [3, 3],
+        35 => [1, 1, 1, 1],
+        50 => [5],
+        60 => [1, 1, 2],
+        70 => [2, 2, 3],
+        80 => [1, 1, 1, 1],
+        90 => [3, 3, 1]
+    ];
+
+    static ref WAVE_7: Wave = wave![
+        0 => [3, 3, 3],
+        5 => [1, 1],
+        20 => [3],
+        25 => [2, 1],
+        35 => [1, 1, 3],
+        40 => [2, 2, 2],
+        50 => [2, 2],
+        60 => [1, 1, 2],
+        70 => [4, 1],
+        80 => [3, 3, 3, 1],
+        85 => [2, 3],
+        95 => [1, 1, 2, 3],
+        100 => [1, 1, 2, 3],
+    ];
+
+
+    static ref WAVE_8: Wave = wave![
+        0 => [2, 2, 1],
+        5 => [2, 2],
+        10 => [1],
+        15 => [1],
+        20 => [3, 3, 3],
+        25 => [4],
+        35 => [1, 1],
+        45 => [2, 2, 2, 2],
+        50 => [2, 2, 2],
+        60 => [1, 1, 1],
+        70 => [4, 1],
+        80 => [1, 1, 2],
+        85 => [2, 3],
+        95 => [4, 1, 1, 3],
+        100 => [1, 1, 1],
+        110 => [1],
+        120 => [2, 2, 2, 2, 2],
+    ];
+
+
+    static ref WAVE_9: Wave = wave![
+        0 => [2, 2, 1, 1, 3],
+        5 => [3, 3],
+        10 => [1, 1],
+        20 => [4],
+        35 => [4],
+        45 => [1, 1, 1, 1],
+        48 => [1, 1, 1],
+        52 => [2, 1, 1, 1],
+        60 => [3, 2],
+        70 => [1, 1],
+        80 => [4, 1, 2],
+        85 => [2, 3, 1],
+        95 => [3, 1, 1, 3],
+        100 => [1, 1, 2, 2],
+        110 => [1, 2, 3, 3],
+        120 => [2, 2, 3, 3],
+        125 => [1, 1],
+        130 => [4],
+        140 => [2, 2, 2, 3],
+    ];
+
+
+    static ref WAVE_10: Wave = wave![
         0 => [1],
+        1 => [1],
+        2 => [1],
+        3 => [1],
+        4 => [1],
+        5 => [2],
+        6 => [2],
+        7 => [2],
+        8 => [2],
+        9 => [2],
+        10 => [3, 3, 3],
+        20 => [3, 3, 3, 3],
+        35 => [3, 3, 3, 3, 3],
+        45 => [4, 1],
+        50 => [2, 2],
+        60 => [2, 4, 4],
+        70 => [2, 3, 3, 2],
+        80 => [2, 2, 1, 1],
+        85 => [2, 3, 4],
+        95 => [3, 1, 1, 4],
+        100 => [3, 2, 2, 2],
+        110 => [2, 3, 3],
+        120 => [2, 3, 2],
+        125 => [1, 1, 1, 1, 1],
+        130 => [4],
+        140 => [2, 2, 2, 2, 2],
+        145 => [2, 2, 2, 2, 2],
+        150 => [2, 2, 2, 2, 2],
     ];
 
-    // static ref WAVES: Vec<Wave> = vec![WAVE_1.clone(), WAVE_2.clone(), WAVE_3.clone()];
-    static ref WAVES: Vec<Wave> = vec![WAVE_TEST.clone()];
-       
+    static ref WAVE_11: Wave = wave![
+        0 => [4],
+        10 => [1, 1, 1, 1, 1],
+        13 => [1, 1, 1, 1],
+        18 => [1, 1, 1, 1],
+        20 => [1, 1, 1, 1, 1],
+        25 => [1, 1, 1, 1],
+        35 => [4],
+        45 => [4, 3, 3],
+        50 => [2, 2, 2],
+        60 => [2, 2, 2, 1],
+        70 => [2, 4],
+        80 => [2, 4],
+        85 => [2, 3, 4],
+        95 => [3, 3, 3, 3],
+        100 => [3, 3, 3, 3],
+        105 => [3, 3, 3, 3, 3],
+        110 => [3, 3, 3, 3],
+        115 => [3, 3, 3, 3, 3],
+        120 => [3, 3, 3, 3],
+        125 => [1, 1, 1, 1, 1],
+        130 => [4],
+        140 => [2, 3, 3],
+        150 => [2, 2, 2, 1],
+        155 => [1, 1],
+        160 => [3, 2],
+        170 => [2, 2, 2, 2, 2],
+        175 => [2, 2, 2, 2, 2],
+        180 => [2, 2, 2, 2, 4],
+        185 => [2, 2, 2, 2, 4],
+        195 => [2, 2, 2, 2, 2],
+        200 => [4, 1, 1, 1, 1],
+        210 => [3, 3, 3, 3, 3],
+        220 => [4, 1, 2, 3, 1],
+    ];
+
+    static ref WAVES: Vec<Wave> = vec![
+        WAVE_1.clone(), 
+        WAVE_2.clone(), 
+        WAVE_3.clone(),
+        WAVE_4.clone(),
+        WAVE_5.clone(),
+        WAVE_6.clone(),
+        WAVE_7.clone(),
+        WAVE_8.clone(),
+        WAVE_9.clone(),
+        WAVE_10.clone(),
+        WAVE_11.clone(),
+    ];
 }
 
 const FPS: u64 = 20;
 const FRAME_TIME: u64 = 1000 / FPS;
 
 enum Msg {
-    Shoot,
-    MoveUp,
-    MoveDown,
+    KeyDown(KeyboardEvent),
     KillAll,
     ExectuteAction(usize, usize),
     NewAction(ActionOnBoard),
@@ -72,7 +247,9 @@ struct Model {
     game: Game,
     show_grid: bool,
     victory: bool,
+    no_more_wave: bool,
     ticker: Box<dyn Task>,
+    input_handler: KeyListenerHandle
 }
 
 #[derive(Debug, Properties, Clone)]
@@ -88,10 +265,14 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
+
         let ticker = IntervalService::spawn(
             Duration::from_millis(FRAME_TIME),
             link.callback(|_| Msg::Tick),
         );
+
+        let input_handler = KeyboardService::register_key_down(&window(), 
+            link.callback(|key_event: KeyboardEvent| Msg::KeyDown(key_event)));
 
         let mut game = Game::default();
         game.add_waves(WAVES.clone());
@@ -102,7 +283,9 @@ impl Component for Model {
             game,
             show_grid: false,
             victory: false,
+            no_more_wave: false,
             ticker: Box::new(ticker),
+            input_handler
         }
     }
 
@@ -110,17 +293,29 @@ impl Component for Model {
         match msg {
             Msg::Tick => {
                 self.game.process();
+                let no_more_enemies = !self.game.is_remaining_enemies();
+                if self.no_more_wave && no_more_enemies {
+                    self.victory = true;
+                    DialogService::alert("GG !")
+                } else if self.game.defeat {
+                    DialogService::alert("DEFEAT :(")
+                }
                 true
             }
-            Msg::Shoot => self.game.player_shoot(),
-            Msg::MoveUp => self.game.move_player_up(),
-            Msg::MoveDown => self.game.move_player_down(),
+            Msg::KeyDown(key) => {
+                match key.key_code() {
+                    38 => self.game.move_player_up(),
+                    39 => self.game.player_shoot(),
+                    40 => self.game.move_player_down(),
+                    _ => ()
+                }
+                false
+            }
             Msg::KillAll => {
-                log!("Kill All");
-                self.game.kill_all()
+                self.game.kill_all();
+                false
             }
             Msg::ExectuteAction(x, y) => {
-                log!(x, y);
                 if self.game.execute_action(x, y) {
                     self.show_grid = false;
                     true
@@ -130,27 +325,26 @@ impl Component for Model {
             }
             Msg::NewAction(action) => {
                 if self.game.action.as_ref() == Some(&action) {
-                    self.show_grid = !self.show_grid;
                     self.game.action = None;
+                    self.show_grid = false;
                 } else {
-                    self.game.action = Some(action);
-                    self.show_grid = true;
-                }
-                true
+                    if self.game.can_execut_action(&action) {
+                        self.game.action = Some(action);
+                        self.show_grid = true;
+                    } else {
+                        self.game.action = None;
+                        self.show_grid = false;
+                    }
+                };
+                false
             }
             Msg::UpgradePlayer => {
-                let succes = self.game.upgrade_player();
-                succes
+                self.game.upgrade_player();
+                false
             }
             Msg::NextWave => {
-                log!("Next wave !");
-                let no_more_wave = self.game.next_wave();
-                let no_more_enemies = !self.game.remaining_enemies();
-                log!(no_more_wave, no_more_enemies);
-                if no_more_wave && no_more_enemies {
-                    self.victory = true;
-                }
-                self.victory
+                self.no_more_wave = self.game.next_wave();
+                false
             }
         }
     }
@@ -172,7 +366,7 @@ impl Component for Model {
 
         let footer_props = FooterProps {
             god_level: self.game.god_level(),
-            wave: 42,
+            wave: self.game.wave(),
             delete_mode: self.game.is_delete_mode(),
             active_god: self.link.callback(|_| Msg::KillAll),
             toggle_delete_mode: self.link.callback(|_| Msg::NewAction(ActionOnBoard::Delete)),

@@ -9,6 +9,7 @@ pub struct GameRow {
     props: GameRowProps,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Properties, PartialEq, Clone)]
 pub struct GameRowProps {
     pub player_level: Option<u8>,
@@ -71,7 +72,8 @@ impl Component for GameRow {
                     <img src="assets/images/laser_balise.png" alt="balise" />
                 </div>
                 { for self.props.projectiles.borrow().iter().map(|proj| {
-                    let projectile_classes = format!("projectile-img level{}-32 free projectile", proj.level());
+                    let player_proj = if proj.from_player() { "player-" } else { "" };
+                    let projectile_classes = format!("{}projectile-img level{}-32 free projectile", player_proj, proj.level());
                     let projectile_pos = format!("left: {}%", proj.x());
                     html_nested! {
                         <div class=classes!(projectile_classes) style=projectile_pos/>
@@ -79,9 +81,9 @@ impl Component for GameRow {
                 }) }
                 { for self.props.enemies.borrow().iter().map(|enemy| {
                     let enemy_classes = format!("enemy-img level{}-128 free", enemy.level());
-                    let enemy_pos = format!("left: {}%", enemy.x());
+                    let enemy_datas = format!("left: {}%; transform: scale({})", enemy.x(), enemy.scale());
                     html_nested! {
-                        <div class=classes!(enemy_classes) style=enemy_pos/>
+                        <div class=classes!(enemy_classes) style=enemy_datas/>
                     }
                 }) }
                 <div class="board-row">

@@ -1,9 +1,11 @@
+
 use yew::services::ConsoleService;
 
 
 // The log! macro is copied from the crate seed
 // See: https://docs.rs/seed/0.8.0/seed/macro.log.html
 
+#[allow(dead_code)]
 pub fn wrap_debug<T: std::fmt::Debug>(object: T) -> T {
     object
 }
@@ -25,6 +27,7 @@ macro_rules! log {
      };
 }
 
+#[allow(dead_code)]
 pub fn log_1(data_1: &str) {
     ConsoleService::log(data_1);
 }

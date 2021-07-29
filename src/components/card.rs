@@ -3,8 +3,6 @@ use std::rc::Rc;
 
 use yew::prelude::*;
 
-use crate::log;
-
 pub struct Card<T: 'static + Clone + PartialEq> {
     link: ComponentLink<Self>,
     props: CardProps<T>,

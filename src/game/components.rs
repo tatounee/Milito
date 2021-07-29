@@ -1,8 +1,7 @@
+
 use std::ops::Add;
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct RangeBox {
     start: i32,
     end: i32,
