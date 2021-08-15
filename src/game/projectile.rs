@@ -68,7 +68,7 @@ impl Projectile {
         match level {
             1 => Some(Self::new(
                 x,
-                30,
+                20,
                 level,
                 50. / FPS as f32,
                 RangeBox::new(1, 2),

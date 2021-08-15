@@ -23,7 +23,7 @@ impl Default for Player {
             line: 0,
             shooting_speed: 3 * FPS,
             waiting: 0,
-            upgrade_cost_text: Rc::new("500".to_owned()),
+            upgrade_cost_text: Rc::new("300".to_owned()),
         }
     }
 }
@@ -41,7 +41,7 @@ impl Player {
 
     #[inline]
     pub fn upgrade_cost(&self) -> u32 {
-        self.level as u32 * 500
+        self.level as u32 * 300
     }
 
     pub fn upgrade(&mut self) -> bool {
