@@ -18,7 +18,7 @@ use game::{turret::Turret, waves::WAVES, ActionOnBoard, Game};
 
 use crate::components::{Board, GameRow, GameRowProps};
 
-const FPS: u64 = 10;
+const FPS: u64 = 30;
 const FRAME_TIME: u64 = 1000 / FPS;
 
 enum Msg {
@@ -102,7 +102,7 @@ impl Component for Model {
                 false
             }
             Msg::KillAll => {
-                self.game.kill_all();
+                self.game.use_god();
                 false
             }
             Msg::ExectuteAction(x, y) => {
