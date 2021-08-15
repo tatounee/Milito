@@ -1,10 +1,9 @@
-
 use std::cmp::Ordering;
 
-use crate::log;
-use super::BOARD_LENGHT;
-use super::projectile::Projectile;
 use super::components::{Collide, RangeBox};
+use super::projectile::Projectile;
+use super::BOARD_LENGHT;
+use crate::log;
 use crate::FPS;
 
 #[derive(Debug, Clone)]
@@ -33,7 +32,15 @@ impl Enemy {
     }
 
     #[inline]
-    pub fn new(life: u32, damage: u32, level: u8, reward: u32, speed: f32, hitbox: RangeBox, attack_waiting: f32) -> Self {
+    pub fn new(
+        life: u32,
+        damage: u32,
+        level: u8,
+        reward: u32,
+        speed: f32,
+        hitbox: RangeBox,
+        attack_waiting: f32,
+    ) -> Self {
         Self {
             life,
             max_life: life as f32,
@@ -44,7 +51,7 @@ impl Enemy {
             speed: speed / FPS as f32,
             hitbox,
             waiting: 0.,
-            attack_waiting: attack_waiting * FPS as f32
+            attack_waiting: attack_waiting * FPS as f32,
         }
     }
 

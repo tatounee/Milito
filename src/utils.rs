@@ -1,6 +1,4 @@
-
 use yew::services::ConsoleService;
-
 
 // The log! macro is copied from the crate seed
 // See: https://docs.rs/seed/0.8.0/seed/macro.log.html

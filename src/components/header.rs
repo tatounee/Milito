@@ -1,4 +1,3 @@
-
 use std::rc::Rc;
 
 use yew::prelude::*;
@@ -32,10 +31,7 @@ impl Component for Header {
     type Properties = HeaderProps;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self {
-            props,
-            link,
-        }
+        Self { props, link }
     }
 
     fn change(&mut self, props: Self::Properties) -> ShouldRender {
@@ -62,7 +58,7 @@ impl Component for Header {
                     <div class=classes!("upgrade")>
                         <Card<()>
                             onclick=self.link.callback(|_| Msg::UpgradePlayer)
-                            level=self.props.player_level 
+                            level=self.props.player_level
                             definition=128
                             onclick_value=Rc::new(())
                             img="player-upgrade".to_owned()

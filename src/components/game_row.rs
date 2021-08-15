@@ -50,7 +50,7 @@ impl Component for GameRow {
     }
 
     fn view(&self) -> Html {
-        // TODO: don't disaeble is delete_mode 
+        // TODO: don't disaeble is delete_mode
         let player = if let Some(level) = self.props.player_level {
             let player_classes = format!("player-img level{}-128 free", level);
             html_nested!(
@@ -91,7 +91,7 @@ impl Component for GameRow {
                             let turret_classes = format!("turret-img level{}-128 free", level);
                             html_nested!(
                                 <div class=classes!(turret_classes) />
-                            )  
+                            )
                         });
                         html_nested!(
                             <button class="cell" onclick=self.link.callback(move |_| Msg::ExectuteAction(x)) disabled=!self.props.show_grid || (turret.is_some() && !self.props.delete_mode)>

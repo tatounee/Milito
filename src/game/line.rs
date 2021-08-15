@@ -5,14 +5,13 @@ use super::components::Collide;
 use super::enemy::Enemy;
 use super::projectile::Projectile;
 use super::turret::Turret;
-use super::{BOARD_LENGHT, Defeat, NBR_OF_COLUMN, Reward};
 use super::wave::{IteratorWaveLine, WaveLine};
+use super::{Defeat, Reward, BOARD_LENGHT, NBR_OF_COLUMN};
 use crate::log;
 
 fn is_enemies_in_front(coord: &[f32], x: f32) -> bool {
     coord.iter().any(|coord| &x <= coord && coord < &(12. * 8.))
 }
-
 
 #[derive(Debug, Clone)]
 pub struct Line {
@@ -61,7 +60,9 @@ impl Line {
 
     #[inline]
     pub fn spawn_projectiles<I: IntoIterator<Item = Projectile>>(&mut self, projectiles: I) {
-        self.projectiles.borrow_mut().extend(projectiles.into_iter())
+        self.projectiles
+            .borrow_mut()
+            .extend(projectiles.into_iter())
     }
 
     #[inline]
@@ -75,7 +76,9 @@ impl Line {
 
     #[inline]
     pub fn next_wave(&mut self) -> Option<()> {
-        self.current_wave = Some(RefCell::new(self.waves.borrow_mut().pop_front()?.into_iter()));
+        self.current_wave = Some(RefCell::new(
+            self.waves.borrow_mut().pop_front()?.into_iter(),
+        ));
         Some(())
     }
 
@@ -95,7 +98,11 @@ impl Line {
 
     #[inline]
     fn enemies_coord(&self) -> Vec<f32> {
-        self.enemies.borrow().iter().map(|e| e.x()).collect::<Vec<f32>>()
+        self.enemies
+            .borrow()
+            .iter()
+            .map(|e| e.x())
+            .collect::<Vec<f32>>()
     }
 
     pub fn process(&mut self) -> (Reward, Defeat) {
@@ -137,15 +144,20 @@ impl Line {
                 .iter_mut()
                 .enumerate()
                 .for_each(|(proj_index, proj)| {
-                    if enemies.by_ref().clone().enumerate().all(|(enemy_index, enemy)| {
-                        if enemy.collide(proj) {
-                            attack_buf.push((proj_index, enemy_index));
-                            proj_buf.push(proj_index);
-                            false
-                        } else {
-                            true
-                        }
-                    }) {
+                    if enemies
+                        .by_ref()
+                        .clone()
+                        .enumerate()
+                        .all(|(enemy_index, enemy)| {
+                            if enemy.collide(proj) {
+                                attack_buf.push((proj_index, enemy_index));
+                                proj_buf.push(proj_index);
+                                false
+                            } else {
+                                true
+                            }
+                        })
+                    {
                         proj.deplace();
                         if proj.x() > BOARD_LENGHT as f32 {
                             proj_buf.push(proj_index)

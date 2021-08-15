@@ -1,10 +1,9 @@
-
 use std::rc::Rc;
 
-use crate::log;
-use crate::FPS;
 use super::projectile::Projectile;
 use super::NBR_OF_LINE;
+use crate::log;
+use crate::FPS;
 
 const PLAYER_MAX_LEVEL: u8 = 4;
 
@@ -14,7 +13,7 @@ pub struct Player {
     pub(crate) line: usize,
     shooting_speed: u64,
     waiting: u64,
-    upgrade_cost_text: Rc<String>
+    upgrade_cost_text: Rc<String>,
 }
 
 impl Default for Player {
@@ -24,7 +23,7 @@ impl Default for Player {
             line: 0,
             shooting_speed: 3 * FPS,
             waiting: 0,
-            upgrade_cost_text: Rc::new("500".to_owned())
+            upgrade_cost_text: Rc::new("500".to_owned()),
         }
     }
 }

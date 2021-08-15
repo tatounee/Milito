@@ -15,7 +15,23 @@ pub struct Projectile {
 }
 
 impl Projectile {
-    pub fn new(x: f32, damage: u32, level: u8, speed: f32, hitbox: RangeBox, from_player: bool) -> Self { Self { x, damage, level, speed, hitbox, from_player } }
+    pub fn new(
+        x: f32,
+        damage: u32,
+        level: u8,
+        speed: f32,
+        hitbox: RangeBox,
+        from_player: bool,
+    ) -> Self {
+        Self {
+            x,
+            damage,
+            level,
+            speed,
+            hitbox,
+            from_player,
+        }
+    }
 
     #[inline]
     pub fn x(&self) -> f32 {
@@ -37,9 +53,15 @@ impl Projectile {
         self.from_player
     }
 
-
     pub fn new_player_projectile(level: u8) -> Self {
-        Self::new(4.,  (level as u32).pow(2) * 10 + 10, level, level as f32 / 2. + 0.8, RangeBox::new(-1, 2), true)
+        Self::new(
+            4.,
+            (level as u32).pow(2) * 10 + 10,
+            level,
+            level as f32 / 2. + 0.8,
+            RangeBox::new(-1, 2),
+            true,
+        )
     }
 
     pub fn new_turret_projectile(level: u8, x: f32) -> Option<Self> {
@@ -64,7 +86,6 @@ impl Projectile {
         }
     }
 
-    
     #[inline]
     pub fn deplace(&mut self) {
         self.x += self.speed;

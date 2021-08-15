@@ -1,9 +1,7 @@
-
 use lazy_static::lazy_static;
 
-use crate::wave;
 use super::wave::Wave;
-
+use crate::wave;
 
 lazy_static! {
     static ref WAVE_1: Wave = wave![
@@ -43,7 +41,7 @@ lazy_static! {
         40 => [1],
         50 => [2, 3],
     ];
-    
+
     static ref WAVE_5: Wave = wave![
         0 => [3, 3],
         10 => [1, 1, 1],
@@ -196,8 +194,8 @@ lazy_static! {
     ];
 
     pub static ref WAVES: Vec<Wave> = vec![
-        WAVE_1.clone(), 
-        WAVE_2.clone(), 
+        WAVE_1.clone(),
+        WAVE_2.clone(),
         WAVE_3.clone(),
         WAVE_4.clone(),
         WAVE_5.clone(),

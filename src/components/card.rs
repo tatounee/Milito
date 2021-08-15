@@ -1,4 +1,3 @@
-
 use std::rc::Rc;
 
 use yew::prelude::*;
@@ -21,7 +20,7 @@ pub struct CardProps<T: Clone + PartialEq> {
 }
 
 pub enum Msg {
-    Onclick
+    Onclick,
 }
 
 impl<T: 'static + Clone + PartialEq> Component for Card<T> {
@@ -43,7 +42,7 @@ impl<T: 'static + Clone + PartialEq> Component for Card<T> {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::Onclick => self.props.onclick.emit(self.props.onclick_value.clone())
+            Msg::Onclick => self.props.onclick.emit(self.props.onclick_value.clone()),
         }
         false
     }
@@ -54,7 +53,7 @@ impl<T: 'static + Clone + PartialEq> Component for Card<T> {
             self.props.level, self.props.definition, self.props.img
         );
 
-        let card_classes = format!("card {}",  if self.props.selected { "selected" } else { "" });
+        let card_classes = format!("card {}", if self.props.selected { "selected" } else { "" });
 
         html! {
             <div class=classes!(card_classes) onclick=self.link.callback(|_| Msg::Onclick)>

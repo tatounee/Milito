@@ -1,4 +1,3 @@
-
 #![allow(unused_imports)]
 
 pub mod components;
@@ -19,7 +18,7 @@ use player::Player;
 use turret::Turret;
 
 use self::wave::{Wave, WaveLine};
-use crate::{FPS, log};
+use crate::{log, FPS};
 
 pub type Reward = u32;
 pub type Defeat = bool;
@@ -27,7 +26,7 @@ pub type Defeat = bool;
 pub const NBR_OF_LINE: usize = 5;
 pub const NBR_OF_COLUMN: usize = 7;
 pub const BOARD_LENGHT: f32 = 110.;
- 
+
 pub const GOD_RECHAGE_TIME: u32 = 20 * FPS as u32;
 pub const GOD_LEVEL_MAX: u32 = 7;
 pub const GOD_CHARGED: u32 = GOD_RECHAGE_TIME * (GOD_LEVEL_MAX - 1);
@@ -128,7 +127,7 @@ impl Game {
             .iter()
             .all(|opt| opt.is_none())
     }
-    
+
     #[inline]
     fn is_wave_running(&self) -> bool {
         self.lines.iter().any(|l| !l.is_wave_ended())
@@ -177,7 +176,7 @@ impl Game {
     pub fn can_execut_action(&self, action: &ActionOnBoard) -> bool {
         match action {
             &ActionOnBoard::PlaceTurret(ref turret) => self.money >= turret.price(),
-            &ActionOnBoard::Delete => true
+            &ActionOnBoard::Delete => true,
         }
     }
 
@@ -205,7 +204,6 @@ impl Game {
         let upgrade_cost = self.player.upgrade_cost();
         if self.money >= upgrade_cost {
             if self.player.upgrade() {
-                
                 self.money -= upgrade_cost;
             }
         }
@@ -223,11 +221,15 @@ impl Game {
         }
         // PLAYER WAIT
         self.player.wait();
-        let result = self.lines.iter_mut().map(|line| line.process()).collect::<Vec<(u32, bool)>>();
+        let result = self
+            .lines
+            .iter_mut()
+            .map(|line| line.process())
+            .collect::<Vec<(u32, bool)>>();
 
         let reward = result.iter().map(|r| r.0).sum::<u32>();
         self.money += reward;
-        
+
         self.defeat = result.iter().any(|r| r.1);
     }
 
@@ -263,7 +265,7 @@ impl ActionOnBoard {
     pub fn get_turret_level(&self) -> Option<u8> {
         match self {
             Self::PlaceTurret(t) => Some(t.level()),
-            Self::Delete => None
+            Self::Delete => None,
         }
     }
 }

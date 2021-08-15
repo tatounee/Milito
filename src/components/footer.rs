@@ -55,7 +55,11 @@ impl Component for Footer {
 
         let trashcan_classes = format!(
             "info-button {}",
-            if self.props.delete_mode { "selected" } else { "" }
+            if self.props.delete_mode {
+                "selected"
+            } else {
+                ""
+            }
         );
 
         html! {

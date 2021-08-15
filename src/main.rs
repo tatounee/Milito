@@ -1,4 +1,3 @@
-
 mod components;
 mod game;
 mod utils;
@@ -6,24 +5,18 @@ mod utils;
 use std::time::Duration;
 
 use yew::{
-    prelude::*, 
+    prelude::*,
     services::{
-        IntervalService,
-        DialogService,
-        Task, 
-        keyboard::{
-            KeyListenerHandle, 
-            KeyboardService
-        }
+        keyboard::{KeyListenerHandle, KeyboardService},
+        DialogService, IntervalService, Task,
     },
     utils::window,
 };
 
 use components::{Footer, FooterProps, Header, HeaderProps};
-use game::{ActionOnBoard, Game, turret::Turret, waves::WAVES};
+use game::{turret::Turret, waves::WAVES, ActionOnBoard, Game};
 
 use crate::components::{Board, GameRow, GameRowProps};
-
 
 const FPS: u64 = 10;
 const FRAME_TIME: u64 = 1000 / FPS;
@@ -45,7 +38,7 @@ struct Model {
     victory: bool,
     no_more_wave: bool,
     ticker: Box<dyn Task>,
-    input_handler: KeyListenerHandle
+    input_handler: KeyListenerHandle,
 }
 
 #[derive(Debug, Properties, Clone)]
@@ -61,14 +54,15 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-
         let ticker = IntervalService::spawn(
             Duration::from_millis(FRAME_TIME),
             link.callback(|_| Msg::Tick),
         );
 
-        let input_handler = KeyboardService::register_key_down(&window(), 
-            link.callback(|key_event: KeyboardEvent| Msg::KeyDown(key_event)));
+        let input_handler = KeyboardService::register_key_down(
+            &window(),
+            link.callback(|key_event: KeyboardEvent| Msg::KeyDown(key_event)),
+        );
 
         let mut game = Game::default();
         game.add_waves(WAVES.clone());
@@ -81,7 +75,7 @@ impl Component for Model {
             victory: false,
             no_more_wave: false,
             ticker: Box::new(ticker),
-            input_handler
+            input_handler,
         }
     }
 
@@ -103,7 +97,7 @@ impl Component for Model {
                     38 => self.game.move_player_up(),
                     39 => self.game.player_shoot(),
                     40 => self.game.move_player_down(),
-                    _ => ()
+                    _ => (),
                 }
                 false
             }
@@ -153,11 +147,19 @@ impl Component for Model {
         let header_props = HeaderProps {
             money: self.game.money,
             turrets: self.game.turret_list(),
-            turret_selected: self.game.action.as_ref().as_ref().map(|act| act.get_turret_level()).flatten(),
+            turret_selected: self
+                .game
+                .action
+                .as_ref()
+                .as_ref()
+                .map(|act| act.get_turret_level())
+                .flatten(),
             player_level: self.game.player.level,
             upgrade_cost_text: self.game.player.upgrade_cost_text(),
-            on_turret_selected: self.link.callback(|turret: Turret| Msg::NewAction(ActionOnBoard::PlaceTurret(turret))),
-            upgrade_player: self.link.callback(|_| Msg::UpgradePlayer)
+            on_turret_selected: self
+                .link
+                .callback(|turret: Turret| Msg::NewAction(ActionOnBoard::PlaceTurret(turret))),
+            upgrade_player: self.link.callback(|_| Msg::UpgradePlayer),
         };
 
         let footer_props = FooterProps {
@@ -165,7 +167,9 @@ impl Component for Model {
             wave: self.game.wave(),
             delete_mode: self.game.is_delete_mode(),
             active_god: self.link.callback(|_| Msg::KillAll),
-            toggle_delete_mode: self.link.callback(|_| Msg::NewAction(ActionOnBoard::Delete)),
+            toggle_delete_mode: self
+                .link
+                .callback(|_| Msg::NewAction(ActionOnBoard::Delete)),
             start_next_wave: self.link.callback(|_| Msg::NextWave),
             wave_ended: self.game.is_wave_ended(),
         };
@@ -211,6 +215,5 @@ impl Component for Model {
 }
 
 fn main() {
-
     yew::start_app::<Model>();
 }

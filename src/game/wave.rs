@@ -1,4 +1,3 @@
-
 use std::collections::HashMap;
 
 use super::enemy::Enemy;
@@ -33,7 +32,7 @@ pub struct Wave {
 
 #[derive(Debug, Default, Clone)]
 pub struct WaveLine {
-    pub troops: HashMap<u64, u8>
+    pub troops: HashMap<u64, u8>,
 }
 
 impl WaveLine {
@@ -46,7 +45,7 @@ impl WaveLine {
 pub struct IteratorWaveLine {
     frame: u64,
     frame_max: u64,
-    troops: HashMap<u64, u8>
+    troops: HashMap<u64, u8>,
 }
 
 impl IteratorWaveLine {
