@@ -66,11 +66,27 @@ impl Line {
     }
 
     #[inline]
-    pub fn kill_all(&mut self) -> Reward {
-        self.enemies
+    pub fn use_god(&mut self) -> Reward {
+        let dead_enemies = self
+            .enemies
             .borrow_mut()
-            .drain(..)
-            .map(|enemy| enemy.reward())
+            .iter_mut()
+            .enumerate()
+            .flat_map(|(i, enemy)| {
+                enemy.take_damage((enemy.max_life() / 1.25) as u32);
+                if enemy.is_dead() {
+                    Some(i)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<usize>>();
+
+        let mut enemies = self.enemies.borrow_mut();
+        dead_enemies
+            .into_iter()
+            .rev()
+            .map(|index| enemies.remove(index).reward())
             .sum()
     }
 

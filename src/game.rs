@@ -233,12 +233,12 @@ impl Game {
         self.defeat = result.iter().any(|r| r.1);
     }
 
-    pub fn kill_all(&mut self) -> bool {
+    pub fn use_god(&mut self) -> bool {
         if self.god == GOD_CHARGED {
             let reward = self
                 .lines
                 .iter_mut()
-                .map(|line| line.kill_all())
+                .map(|line| line.use_god())
                 .sum::<u32>();
             self.money += reward;
             self.god = 0;
