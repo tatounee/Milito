@@ -12,8 +12,8 @@ const PLAYER_MAX_LEVEL: u8 = 4;
 pub struct Player {
     pub(crate) level: u8,
     pub(crate) line: usize,
-    shooting_speed: u32,
-    waiting: u32,
+    shooting_speed: u64,
+    waiting: u64,
     upgrade_cost_text: Rc<String>
 }
 
@@ -22,7 +22,7 @@ impl Default for Player {
         Self {
             level: 1,
             line: 0,
-            shooting_speed: 3 * FPS as u32,
+            shooting_speed: 3 * FPS,
             waiting: 0,
             upgrade_cost_text: Rc::new("500".to_owned())
         }
@@ -30,6 +30,11 @@ impl Default for Player {
 }
 
 impl Player {
+    #[inline]
+    fn update_shooting_speed(&mut self) {
+        self.shooting_speed = ((3. - (self.level as f64 - 1.) / 2. ) * FPS as f64 ) as u64;
+    }
+
     #[inline]
     pub fn upgrade_cost_text(&self) -> Rc<String> {
         self.upgrade_cost_text.clone()
@@ -43,6 +48,7 @@ impl Player {
     pub fn upgrade(&mut self) -> bool {
         if self.level < PLAYER_MAX_LEVEL {
             self.level += 1;
+            self.update_shooting_speed();
 
             self.upgrade_cost_text = if self.level < PLAYER_MAX_LEVEL {
                 Rc::new(self.upgrade_cost().to_string())
