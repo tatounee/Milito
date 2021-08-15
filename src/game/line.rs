@@ -150,7 +150,7 @@ impl Line {
 
     fn process_projectiles(&mut self) -> Reward {
         let mut attack_buf = Vec::new();
-        let mut proj_buf = Vec::new();
+        let mut del_proj = Vec::new();
         let mut reward = 0;
         {
             let bren = self.enemies.borrow();
@@ -167,7 +167,7 @@ impl Line {
                         .all(|(enemy_index, enemy)| {
                             if enemy.collide(proj) {
                                 attack_buf.push((proj_index, enemy_index));
-                                proj_buf.push(proj_index);
+                                del_proj.push(proj_index);
                                 false
                             } else {
                                 true
@@ -176,33 +176,37 @@ impl Line {
                     {
                         proj.deplace();
                         if proj.x() > BOARD_LENGHT as f32 {
-                            proj_buf.push(proj_index)
+                            del_proj.push(proj_index)
                         }
                     }
                 });
         }
 
         attack_buf.sort_unstable_by(|(_, enmy1), (_, enmy2)| enmy2.cmp(enmy1));
-        proj_buf.sort_unstable_by(|proj1, proj2| proj2.cmp(proj1));
+        del_proj.sort_unstable_by(|proj1, proj2| proj2.cmp(proj1));
 
-        let mut dead_enemies = Vec::new();
-        for (proj_index, enemy_index) in attack_buf {
-            {
+        let mut dead_enemies = attack_buf
+            .into_iter()
+            .flat_map(|(proj_index, enemy_index)| {
                 let projectile = &self.projectiles.borrow()[proj_index];
                 let mut bren = self.enemies.borrow_mut();
                 let enemy = bren.get_mut(enemy_index).unwrap();
                 enemy.take_damage(projectile.damage());
                 if enemy.is_dead() {
-                    dead_enemies.push(enemy_index);
+                    Some(enemy_index)
+                } else {
+                    None
                 }
-            }
-        }
+            })
+            .collect::<Vec<usize>>();
+
+
         for dead_index in dead_enemies {
             reward += self.enemies.borrow_mut().remove(dead_index).reward();
         }
 
         let mut projectiles = self.projectiles.borrow_mut();
-        for index in proj_buf {
+        for index in del_proj {
             projectiles.remove(index);
         }
 
