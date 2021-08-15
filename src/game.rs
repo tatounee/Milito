@@ -8,6 +8,7 @@ pub mod player;
 pub mod projectile;
 pub mod turret;
 pub mod wave;
+pub mod waves;
 
 use std::{cell::RefCell, collections::VecDeque, rc::Rc, vec};
 
@@ -21,6 +22,7 @@ use self::wave::{Wave, WaveLine};
 use crate::{FPS, log};
 
 pub type Reward = u32;
+pub type Defeat = bool;
 
 pub const NBR_OF_LINE: usize = 5;
 pub const NBR_OF_COLUMN: usize = 7;
@@ -63,7 +65,7 @@ impl Default for Game {
     fn default() -> Self {
         Self {
             lines: vec![Line::default(); NBR_OF_LINE],
-            money: 0,
+            money: 99999,
             player: Player::default(),
             action: None,
             god: 1,

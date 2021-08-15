@@ -25,6 +25,7 @@ use game::{ActionOnBoard, Game, turret::Turret, waves::WAVES};
 use crate::components::{Board, GameRow, GameRowProps};
 
 
+const FPS: u64 = 10;
 const FRAME_TIME: u64 = 1000 / FPS;
 
 enum Msg {
