@@ -9,7 +9,6 @@ pub struct GameRow {
     props: GameRowProps,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Properties, PartialEq, Clone)]
 pub struct GameRowProps {
     pub player_level: Option<u8>,

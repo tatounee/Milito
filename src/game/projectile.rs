@@ -15,6 +15,8 @@ pub struct Projectile {
 }
 
 impl Projectile {
+    pub fn new(x: f32, damage: u32, level: u8, speed: f32, hitbox: RangeBox, from_player: bool) -> Self { Self { x, damage, level, speed, hitbox, from_player } }
+
     #[inline]
     pub fn x(&self) -> f32 {
         self.x
@@ -35,35 +37,29 @@ impl Projectile {
         self.from_player
     }
 
+
     pub fn new_player_projectile(level: u8) -> Self {
-        Self {
-            x: 4.,
-            damage: (level as u32).pow(2) * 10 + 10,
-            level,
-            speed: level as f32 * 1.5,
-            hitbox: RangeBox::new(-1, 2),
-            from_player: true,
-        }
+        Self::new(4.,  (level as u32).pow(2) * 10 + 10, level, level as f32 / 2. + 0.8, RangeBox::new(-1, 2), true)
     }
 
     pub fn new_turret_projectile(level: u8, x: f32) -> Option<Self> {
         match level {
-            1 => Some(Self {
+            1 => Some(Self::new(
                 x,
+                30,
                 level,
-                damage: 30,
-                speed: 50. / FPS as f32,
-                hitbox: RangeBox::new(1, 2),
-                from_player: false,
-            }),
-            2 => Some(Self {
+                50. / FPS as f32,
+                RangeBox::new(1, 2),
+                false,
+            )),
+            2 => Some(Self::new(
                 x,
+                90,
                 level,
-                damage: 90,
-                speed: 35. / FPS as f32,
-                hitbox: RangeBox::new(1, 2),
-                from_player: false,
-            }),
+                35. / FPS as f32,
+                RangeBox::new(1, 2),
+                false,
+            )),
             _ => None,
         }
     }

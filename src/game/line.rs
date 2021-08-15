@@ -5,7 +5,7 @@ use super::components::Collide;
 use super::enemy::Enemy;
 use super::projectile::Projectile;
 use super::turret::Turret;
-use super::{BOARD_LENGHT, NBR_OF_COLUMN, Reward};
+use super::{BOARD_LENGHT, Defeat, NBR_OF_COLUMN, Reward};
 use super::wave::{IteratorWaveLine, WaveLine};
 use crate::log;
 
@@ -98,7 +98,7 @@ impl Line {
         self.enemies.borrow().iter().map(|e| e.x()).collect::<Vec<f32>>()
     }
 
-    pub fn process(&mut self) -> (Reward, bool) {
+    pub fn process(&mut self) -> (Reward, Defeat) {
         let reward = self.process_projectiles();
 
         let defeat = self.process_enemies();
@@ -183,7 +183,7 @@ impl Line {
 
     fn process_enemies(&mut self) -> bool {
         let mut attack_buf = Vec::new();
-        let mut cells = self.cells.iter();
+        let cells = self.cells.iter();
         let mut defeat = false;
         self.enemies
             .borrow_mut()
