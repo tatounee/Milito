@@ -32,12 +32,14 @@
 
 .cell {
     width: 100%;
-    z-index: 3;
     background-color: transparent;
     border: 1px solid transparent;
     position: relative;
 }
 
+.cell:not(:disabled) {
+    z-index: 3;
+}
 
 .cell > div {
     margin: 0 auto;
@@ -49,12 +51,13 @@
     cursor: pointer;
 }
 
-.show .cell:disabled {
-    cursor: not-allowed;
-}
-
 .show .cell:hover {
     background-color: var(--color-cell);
+}
+
+.show .cell:disabled {
+    cursor: not-allowed;
+    background-color: transparent;
 }
 
 .game-row > div:first-child {
