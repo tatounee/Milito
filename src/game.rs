@@ -64,7 +64,7 @@ impl Default for Game {
     fn default() -> Self {
         Self {
             lines: vec![Line::default(); NBR_OF_LINE],
-            money: 99999,
+            money: if cfg!(debug_assertions) { 99999 } else { 0 },
             player: Player::default(),
             action: None,
             god: 1,
