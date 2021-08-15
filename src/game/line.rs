@@ -38,7 +38,7 @@ impl Line {
         let mut price = 0;
         if self.cells[x].is_none() {
             price = turret.price();
-            self.cells[x] = Some(turret.set_x(((x + 1) * 12 + 6) as f32))
+            self.cells[x] = Some(turret.set_x((x + 1) as f32 * 12.5 + 6.))
         }
         price
     }

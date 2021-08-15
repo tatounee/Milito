@@ -22,42 +22,66 @@ pub struct Turret {
 }
 
 impl Turret {
+    pub fn new(
+        x: f32,
+        price: u32,
+        price_text: Rc<String>,
+        level: u8,
+        shoot: bool,
+        life: u32,
+        hitbox: RangeBox,
+        waiting: f32,
+        attack_waiting: f32,
+    ) -> Self {
+        Self {
+            x,
+            price,
+            price_text,
+            level,
+            shoot,
+            life,
+            hitbox,
+            waiting,
+            attack_waiting,
+        }
+    }
+
     pub fn prefab_turret(level: u8) -> Option<Self> {
         match level {
-            1 => Some(Self {
-                x: 0.,
-                price: 100,
-                price_text: Rc::new("100".to_owned()),
+            1 => Some(Self::new(
+                0.,
+                100,
+                Rc::new("100".to_owned()),
                 level,
-                shoot: true,
-                life: 120,
-                hitbox: RangeBox::new(1, 7),
-                waiting: 0.,
-                attack_waiting: 1.8 * FPS as f32, // 30 dmg
-            }),
-            2 => Some(Self {
-                x: 0.,
-                price: 300,
-                price_text: Rc::new("300".to_owned()),
+                true,
+                120,
+                RangeBox::new(-2, 2),
+                0.,
+                1.8 * FPS as f32, // 30 dmg
+            )),
+            2 => Some(Self::new(
+                0.,
+                300,
+                Rc::new("300".to_owned()),
                 level,
-                shoot: true,
-                life: 120,
-                hitbox: RangeBox::new(1, 7),
-                waiting: 0.,
-                attack_waiting: 2.5 * FPS as f32, // 90 dmg
-            }),
-            3 => Some(Self {
-                x: 0.,
-                price: 200,
-                price_text: Rc::new("200".to_owned()),
+                true,
+                120,
+                RangeBox::new(-2, 2),
+                0.,
+                2.5 * FPS as f32, // 90 dmg
+            )),
+            3 => Some(Self::new(
+                0.,
+                200,
+                Rc::new("200".to_owned()),
                 level,
-                shoot: false,
-                life: 5000,
-                hitbox: RangeBox::new(-2, 5),
-                waiting: 0.,
-                attack_waiting: 0.,
-            }),
-            _ => None
+                false,
+                5000,
+                RangeBox::new(-2, 2),
+                0.,
+                0.,
+            )),
+            _ => None,
         }
     }
 

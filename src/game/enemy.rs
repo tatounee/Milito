@@ -24,11 +24,11 @@ pub struct Enemy {
 impl Enemy {
     pub fn prefab(level: u8) -> Option<Self> {
         match level {
-            1 => Some(Self::new(80, 35, 1, 10, -4., RangeBox::new(3, 7), 0.7)),
-            2 => Some(Self::new(200, 40, 2, 20, -2.5, RangeBox::new(4, 7), 1.)),
-            3 => Some(Self::new(30, 20, 3, 15, -7., RangeBox::new(2, 8), 0.4)),
-            4 => Some(Self::new(2000, 600, 4, 50, -1.8, RangeBox::new(1, 9), 1.3)),
-            _ => None
+            1 => Some(Self::new(80, 35, 1, 10, -4., RangeBox::new(3, 6), 0.7)), // DPS: 50
+            2 => Some(Self::new(200, 40, 2, 20, -2.5, RangeBox::new(4, 7), 1.)), // DPS: 40
+            3 => Some(Self::new(30, 25, 3, 15, -7., RangeBox::new(2, 7), 0.4)), // DPS: 62.5
+            4 => Some(Self::new(2000, 600, 4, 50, -1.8, RangeBox::new(1, 7), 1.3)), // DPS: 461.5
+            _ => None,
         }
     }
 
