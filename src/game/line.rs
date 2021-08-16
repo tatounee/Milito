@@ -201,6 +201,7 @@ impl Line {
             .collect::<Vec<usize>>();
 
         dead_enemies.sort_unstable_by(|enmy1, enmy2| enmy2.cmp(enmy1));
+        dead_enemies.dedup();
 
         for dead_index in dead_enemies {
             reward += self.enemies.borrow_mut().remove(dead_index).reward();
