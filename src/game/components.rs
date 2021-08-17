@@ -17,6 +17,16 @@ impl Add<f32> for RangeBox {
 
 impl RangeBox {
     #[inline]
+    pub fn start(&self) -> f32 {
+        self.start
+    }
+
+    #[inline]
+    pub fn end(&self) -> f32 {
+        self.end
+    }
+
+    #[inline]
     pub fn new(start: f32, end: f32) -> Self {
         Self { start, end }
     }
@@ -27,13 +37,13 @@ impl RangeBox {
     }
 }
 
-impl Collide for RangeBox {
-    #[inline]
-    fn collide(&self, with: Self) -> bool {
-        self.contains(with.start) || self.contains(with.end)
-    }
+pub trait Collide<With> {
+    fn collide(&self, with: With) -> bool;
 }
 
-pub trait Collide<With = Self> {
-    fn collide(&self, with: With) -> bool;
+impl Collide<&Self> for RangeBox {
+    #[inline]
+    fn collide(&self, with: &Self) -> bool {
+        self.contains(with.start) || self.contains(with.end)
+    }
 }

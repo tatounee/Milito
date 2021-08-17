@@ -12,6 +12,7 @@ pub struct Projectile {
     speed: f32,
     hitbox: RangeBox,
     from_player: bool,
+    next_impact: Option<usize>,
 }
 
 impl Projectile {
@@ -30,12 +31,18 @@ impl Projectile {
             speed,
             hitbox,
             from_player,
+            next_impact: None,
         }
     }
 
     #[inline]
     pub fn x(&self) -> f32 {
         self.x
+    }
+
+    #[inline]
+    pub fn speed(&self) -> f32 {
+        self.speed
     }
 
     #[inline]
@@ -53,6 +60,16 @@ impl Projectile {
         self.from_player
     }
 
+    #[inline]
+    pub fn take_next_impact(&mut self) -> Option<usize> {
+        self.next_impact.take()
+    }
+
+    #[inline]
+    pub fn add_next_impact(&mut self, id: usize) {
+        self.next_impact = Some(id)
+    }
+
     pub fn new_player_projectile(level: u8) -> Self {
         Self::new(
             4.,
@@ -67,7 +84,7 @@ impl Projectile {
     pub fn new_turret_projectile(level: u8, x: f32) -> Option<Self> {
         match level {
             1 => Some(Self::new(
-                x,
+                x - 1.,
                 20,
                 level,
                 50. / FPS as f32,
@@ -75,7 +92,7 @@ impl Projectile {
                 false,
             )),
             2 => Some(Self::new(
-                x,
+                x - 1.,
                 90,
                 level,
                 35. / FPS as f32,

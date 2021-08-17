@@ -141,7 +141,7 @@ impl Turret {
     pub fn shoot(&mut self) -> Option<Projectile> {
         if self.can_attack() {
             self.waiting = 0.;
-            Projectile::new_turret_projectile(self.level, self.x)
+            Projectile::new_turret_projectile(self.level, self.hitbox().start())
         } else {
             None
         }

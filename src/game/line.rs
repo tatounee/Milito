@@ -1,3 +1,4 @@
+use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::collections::VecDeque;
 
@@ -117,7 +118,7 @@ impl Line {
         self.enemies
             .borrow()
             .iter()
-            .map(|e| e.x())
+            .map(|e| e.hitbox().end())
             .collect::<Vec<f32>>()
     }
 
@@ -149,67 +150,87 @@ impl Line {
     }
 
     fn process_projectiles(&mut self) -> Reward {
-        let mut attack_buf = Vec::new();
-        let mut del_proj = Vec::new();
+        let mut buf_attack = Vec::new();
+        let mut del_projs = Vec::new();
+        let mut move_projs = Vec::new();
+        let mut dead_enemies = Vec::new();
         let mut reward = 0;
-        {
-            let bren = self.enemies.borrow();
-            let mut enemies = bren.iter();
-            self.projectiles
-                .borrow_mut()
-                .iter_mut()
-                .enumerate()
-                .for_each(|(proj_index, proj)| {
-                    if enemies
-                        .by_ref()
-                        .clone()
-                        .enumerate()
-                        .all(|(enemy_index, enemy)| {
-                            if enemy.collide(proj) {
-                                attack_buf.push((proj_index, enemy_index));
-                                del_proj.push(proj_index);
-                                false
-                            } else {
-                                true
-                            }
-                        })
-                    {
-                        proj.deplace();
-                        if proj.x() > BOARD_LENGHT as f32 {
-                            del_proj.push(proj_index)
-                        }
-                    }
-                });
+
+        self.projectiles
+            .borrow_mut()
+            .iter_mut()
+            .enumerate()
+            .for_each(|(proj_index, proj)| {
+                if let Some(impact_idx) = proj.take_next_impact() {
+                    buf_attack.push((proj_index, impact_idx));
+                } else {
+                    move_projs.push(proj_index);
+                }
+            });
+
+        buf_attack.sort_unstable_by(|(_, enmy1), (_, enmy2)| enmy2.cmp(enmy1));
+
+        for (proj_index, enemy_index) in buf_attack {
+            let projectile = &self.projectiles.borrow()[proj_index];
+            let mut bren = self.enemies.borrow_mut();
+            let enemy = bren.get_mut(enemy_index).unwrap();
+
+            if !dead_enemies.contains(&enemy_index) {
+                enemy.take_damage(projectile.damage());
+                del_projs.push(proj_index);
+                if enemy.is_dead() {
+                    dead_enemies.push(enemy_index)
+                }
+            } else {
+                move_projs.push(proj_index);
+            }
         }
 
-        attack_buf.sort_unstable_by(|(_, enmy1), (_, enmy2)| enmy2.cmp(enmy1));
-        del_proj.sort_unstable_by(|proj1, proj2| proj2.cmp(proj1));
-
-        let mut dead_enemies = attack_buf
-            .into_iter()
-            .flat_map(|(proj_index, enemy_index)| {
-                let projectile = &self.projectiles.borrow()[proj_index];
-                let mut bren = self.enemies.borrow_mut();
-                let enemy = bren.get_mut(enemy_index).unwrap();
-                enemy.take_damage(projectile.damage());
-                if enemy.is_dead() {
-                    Some(enemy_index)
-                } else {
-                    None
-                }
-            })
-            .collect::<Vec<usize>>();
-
         dead_enemies.sort_unstable_by(|enmy1, enmy2| enmy2.cmp(enmy1));
-        dead_enemies.dedup();
-
         for dead_index in dead_enemies {
             reward += self.enemies.borrow_mut().remove(dead_index).reward();
         }
 
+        {
+            let mut projectiles = self.projectiles.borrow_mut();
+            for proj_index in move_projs {
+                let proj = projectiles.get_mut(proj_index).unwrap();
+                if let Some(idx) = self
+                    .enemies
+                    .borrow()
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, enemy)| enemy.hitbox().end() >= proj.hitbox().start())
+                    .min_by(|(_, enmy1), (_, enmy2)| {
+                        (enmy1.hitbox().start() - proj.hitbox().end())
+                            .partial_cmp(&(enmy2.hitbox().start() - proj.hitbox().end()))
+                            .unwrap()
+                    })
+                    .map(|(idx, enemy)| {
+                        if (enemy.hitbox().start() + enemy.speed())
+                            - (proj.hitbox().end() + proj.speed())
+                            <= 0.
+                        {
+                            Some(idx)
+                        } else {
+                            None
+                        }
+                    })
+                    .flatten()
+                {
+                    proj.add_next_impact(idx)
+                }
+                proj.deplace();
+                if proj.x() > BOARD_LENGHT as f32 {
+                    del_projs.push(proj_index)
+                }
+            }
+        }
+
+        del_projs.sort_unstable_by(|proj1, proj2| proj2.cmp(proj1));
         let mut projectiles = self.projectiles.borrow_mut();
-        for index in del_proj {
-            projectiles.remove(index);
+        for proj in del_projs {
+            projectiles.remove(proj);
         }
 
         reward

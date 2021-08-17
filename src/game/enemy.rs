@@ -152,6 +152,6 @@ impl Ord for Enemy {
 impl Collide<&Projectile> for &Enemy {
     #[inline]
     fn collide(&self, with: &Projectile) -> bool {
-        self.get_hitbox().collide(with.get_hitbox())
+        self.hitbox().collide(&with.hitbox())
     }
 }
