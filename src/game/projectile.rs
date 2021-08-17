@@ -58,8 +58,8 @@ impl Projectile {
             4.,
             (level as u32).pow(2) * 10 + 10,
             level,
-            level as f32 / 2. + 0.8,
-            RangeBox::new(-1, 2),
+            (level as f32 / 2. + 0.8) * 30. / FPS as f32,
+            RangeBox::new(-1., 2.),
             true,
         )
     }
@@ -71,7 +71,7 @@ impl Projectile {
                 20,
                 level,
                 50. / FPS as f32,
-                RangeBox::new(1, 2),
+                RangeBox::new(1., 2.),
                 false,
             )),
             2 => Some(Self::new(
@@ -79,7 +79,7 @@ impl Projectile {
                 90,
                 level,
                 35. / FPS as f32,
-                RangeBox::new(1, 2),
+                RangeBox::new(1., 2.),
                 false,
             )),
             _ => None,

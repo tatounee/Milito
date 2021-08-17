@@ -2,15 +2,15 @@ use std::ops::Add;
 
 #[derive(Debug, Clone)]
 pub struct RangeBox {
-    start: i32,
-    end: i32,
+    start: f32,
+    end: f32,
 }
 
-impl Add<i32> for RangeBox {
+impl Add<f32> for RangeBox {
     type Output = Self;
 
     #[inline]
-    fn add(self, shift: i32) -> Self::Output {
+    fn add(self, shift: f32) -> Self::Output {
         Self::new(self.start + shift, self.end + shift)
     }
 }
@@ -22,7 +22,7 @@ impl RangeBox {
     }
 
     #[inline]
-    pub fn contains(&self, number: i32) -> bool {
+    pub fn contains(&self, number: f32) -> bool {
         self.start <= number && number < self.end
     }
 }

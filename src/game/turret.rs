@@ -55,7 +55,7 @@ impl Turret {
                 level,
                 true,
                 120,
-                RangeBox::new(-2, 2),
+                RangeBox::new(-2., 2.),
                 0.,
                 1.8 * FPS as f32, // 20 dmg, DSP: 11.1
             )),
@@ -66,7 +66,7 @@ impl Turret {
                 level,
                 true,
                 120,
-                RangeBox::new(-2, 2),
+                RangeBox::new(-2., 2.),
                 0.,
                 2.5 * FPS as f32, // 90 dmg, DPS: 36
             )),
@@ -77,7 +77,7 @@ impl Turret {
                 level,
                 false,
                 5000,
-                RangeBox::new(-2, 2),
+                RangeBox::new(-2., 2.),
                 0.,
                 0.,
             )),
