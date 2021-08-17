@@ -26,6 +26,7 @@ pub type Defeat = bool;
 pub const NBR_OF_LINE: usize = 5;
 pub const NBR_OF_COLUMN: usize = 7;
 pub const BOARD_LENGHT: f32 = 110.;
+const CELL_SIZE: f32 = 12.5;
 
 pub const GOD_RECHAGE_TIME: u32 = 20 * FPS as u32;
 pub const GOD_LEVEL_MAX: u32 = 7;

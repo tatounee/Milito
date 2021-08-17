@@ -7,11 +7,13 @@ use super::enemy::Enemy;
 use super::projectile::Projectile;
 use super::turret::Turret;
 use super::wave::{IteratorWaveLine, WaveLine};
-use super::{Defeat, Reward, BOARD_LENGHT, NBR_OF_COLUMN};
+use super::{Defeat, Reward, BOARD_LENGHT, CELL_SIZE, NBR_OF_COLUMN};
 use crate::log;
 
 fn is_enemies_in_front(coord: &[f32], x: f32) -> bool {
-    coord.iter().any(|coord| &x <= coord && coord < &(12. * 8.))
+    coord
+        .iter()
+        .any(|coord| &x <= coord && coord < &(CELL_SIZE * 8. + 6.))
 }
 
 #[derive(Debug, Clone)]
@@ -38,7 +40,7 @@ impl Line {
         let mut price = 0;
         if self.cells[x].is_none() {
             price = turret.price();
-            self.cells[x] = Some(turret.set_x((x + 1) as f32 * 12.5 + 6.))
+            self.cells[x] = Some(turret.set_x((x + 1) as f32 * CELL_SIZE + 6.))
         }
         price
     }
@@ -134,21 +136,6 @@ impl Line {
         (reward, defeat)
     }
 
-    fn process_turrets(&mut self) {
-        let mut shoots_buf = Vec::with_capacity(7);
-        let enemies_coord = self.enemies_coord();
-        self.cells.iter_mut().for_each(|turret| {
-            if let Some(turret) = turret {
-                // TURRET WAIT
-                turret.wait();
-                if turret.can_attack() && is_enemies_in_front(&enemies_coord, turret.x()) {
-                    shoots_buf.push(turret.shoot().unwrap())
-                }
-            }
-        });
-        self.spawn_projectiles(shoots_buf);
-    }
-
     fn process_projectiles(&mut self) -> Reward {
         let mut buf_attack = Vec::new();
         let mut del_projs = Vec::new();
@@ -238,7 +225,6 @@ impl Line {
 
     fn process_enemies(&mut self) -> bool {
         let mut attack_buf = Vec::new();
-        let cells = self.cells.iter();
         let mut defeat = false;
         self.enemies
             .borrow_mut()
@@ -282,6 +268,21 @@ impl Line {
         }
 
         defeat
+    }
+
+    fn process_turrets(&mut self) {
+        let mut shoots_buf = Vec::with_capacity(7);
+        let enemies_coord = self.enemies_coord();
+        self.cells.iter_mut().for_each(|turret| {
+            if let Some(turret) = turret {
+                // TURRET WAIT
+                turret.wait();
+                if turret.can_attack() && is_enemies_in_front(&enemies_coord, turret.hitbox().start()) {
+                    shoots_buf.push(turret.shoot().unwrap())
+                }
+            }
+        });
+        self.spawn_projectiles(shoots_buf);
     }
 
     fn spawn_new_enemies(&mut self) {

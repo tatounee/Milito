@@ -1,3 +1,4 @@
+
 use std::cmp::Ordering;
 
 use super::components::{Collide, RangeBox};
@@ -66,6 +67,11 @@ impl Enemy {
     #[inline]
     pub fn x(&self) -> f32 {
         self.x
+    }
+
+    #[inline]
+    pub fn speed(&self) -> f32 {
+        self.speed
     }
 
     #[inline]
