@@ -1,6 +1,6 @@
 use std::ops::Add;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct RangeBox {
     start: f32,
     end: f32,
@@ -17,7 +17,7 @@ impl Add<f32> for RangeBox {
 
 impl RangeBox {
     #[inline]
-    pub fn new(start: i32, end: i32) -> Self {
+    pub fn new(start: f32, end: f32) -> Self {
         Self { start, end }
     }
 

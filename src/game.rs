@@ -39,9 +39,9 @@ fn get_rng_lines(lenght: usize, amount: usize) -> Vec<usize> {
 
     let mut vec = (0..lenght).collect::<Vec<usize>>();
 
-    for i in vec.clone().iter() {
+    for i in vec.clone() {
         let goto = (unsafe { js_random() } * (lenght - 1) as f64) as usize;
-        vec.swap(*i, goto);
+        vec.swap(i, goto);
     }
 
     let drained = vec.drain(0..amount).collect::<Vec<usize>>();

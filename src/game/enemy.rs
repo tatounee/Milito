@@ -103,8 +103,8 @@ impl Enemy {
     }
 
     #[inline]
-    pub fn get_hitbox(&self) -> RangeBox {
-        self.hitbox.clone() + self.x as i32
+    pub fn hitbox(&self) -> RangeBox {
+        self.hitbox + self.x
     }
 
     #[inline]

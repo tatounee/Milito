@@ -226,7 +226,7 @@ impl Line {
             .for_each(|(enemy_index, enemy)| {
                 // ENEMY WAIT
                 enemy.wait();
-                if (&cells).clone().enumerate().all(|(turret_index, turret)| {
+                if self.cells.iter().enumerate().all(|(turret_index, turret)| {
                     if let Some(turret) = turret {
                         if turret.collide(enemy) {
                             attack_buf.push((enemy_index, turret_index));

@@ -86,11 +86,6 @@ impl Turret {
     }
 
     #[inline]
-    pub fn x(&self) -> f32 {
-        self.x
-    }
-
-    #[inline]
     pub fn set_x(mut self, x: f32) -> Self {
         self.x = x;
         self
@@ -129,8 +124,8 @@ impl Turret {
     }
 
     #[inline]
-    pub fn get_hitbox(&self) -> RangeBox {
-        self.hitbox.clone() + self.x as i32
+    pub fn hitbox(&self) -> RangeBox {
+        self.hitbox + self.x
     }
 
     #[inline]
@@ -156,7 +151,7 @@ impl Turret {
 impl Collide<&Enemy> for &Turret {
     #[inline]
     fn collide(&self, with: &Enemy) -> bool {
-        self.get_hitbox().collide(with.get_hitbox())
+        self.hitbox().collide(&with.hitbox())
     }
 }
 
