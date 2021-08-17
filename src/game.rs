@@ -18,7 +18,7 @@ use player::Player;
 use turret::Turret;
 
 use self::wave::{Wave, WaveLine};
-use crate::{log, FPS};
+use crate::{FPS, log, utils::rng};
 
 pub type Reward = u32;
 pub type Defeat = bool;
@@ -32,7 +32,6 @@ pub const GOD_RECHAGE_TIME: u32 = 20 * FPS as u32;
 pub const GOD_LEVEL_MAX: u32 = 7;
 pub const GOD_CHARGED: u32 = GOD_RECHAGE_TIME * (GOD_LEVEL_MAX - 1);
 
-#[allow(unused_unsafe)]
 fn get_rng_lines(lenght: usize, amount: usize) -> Vec<usize> {
     if lenght == 0 || amount == 0 {
         return Vec::new();
@@ -41,7 +40,7 @@ fn get_rng_lines(lenght: usize, amount: usize) -> Vec<usize> {
     let mut vec = (0..lenght).collect::<Vec<usize>>();
 
     for i in vec.clone() {
-        let goto = (unsafe { js_random() } * (lenght - 1) as f64) as usize;
+        let goto = (rng() * (lenght - 1) as f64) as usize;
         vec.swap(i, goto);
     }
 
@@ -144,7 +143,7 @@ impl Game {
         self.lines.iter().any(|line| line.is_remaining_enemies())
     }
 
-    pub fn enemy_wave_assign_line(&mut self) {
+    pub fn assign_line_for_enemies(&mut self) {
         let mut wave_packs = vec![VecDeque::new(); NBR_OF_LINE];
 
         for wave in self.waves.iter_mut() {

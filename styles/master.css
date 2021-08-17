@@ -10,7 +10,8 @@
     padding: 0;
 }
 
-html, body {
+html,
+body {
     height: 100vh;
     width: 100vw;
 }
@@ -47,6 +48,7 @@ body {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(359deg);
     }
@@ -121,6 +123,7 @@ body {
     from {
         background-position-y: 0px;
     }
+
     to {
         background-position-y: -512px;
     }
@@ -144,6 +147,22 @@ body {
 
 .level4-128 {
     background-position: 0 -384px
+}
+
+.level5-128 {
+    background-position: 0 -512px
+}
+
+.level6-128 {
+    background-position: 0 -640px
+}
+
+.level7-128 {
+    background-position: 0 -768px
+}
+
+.level8-128 {
+    background-position: 0 -896px
 }
 
 /* 64 */
