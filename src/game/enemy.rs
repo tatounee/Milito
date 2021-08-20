@@ -1,12 +1,11 @@
-
 use std::cmp::Ordering;
 
 use super::components::{Collide, RangeBox};
 use super::projectile::Projectile;
 use super::BOARD_LENGHT;
 use crate::log;
+use crate::utils::{rng, GetRandom};
 use crate::FPS;
-use crate::utils::{GetRandom, rng};
 
 #[derive(Debug, Clone)]
 pub struct Enemy {
@@ -28,12 +27,28 @@ impl Enemy {
             1 => Some(Self::new(80, 35, 1, 10, -4., RangeBox::new(4., 6.), 0.7)), // DPS: 50
             2 => Some(Self::new(250, 40, 2, 20, -3., RangeBox::new(4., 7.), 1.)), // DPS: 40
             3 => Some(Self::new(30, 25, 3, 15, -10., RangeBox::new(2., 7.), 0.4)), // DPS: 62.5
-            4 => Some(Self::new(2000, 600, 4, 50, -1.8, RangeBox::new(2., 7.), 1.3,)), // DPS: 461.5
+            4 => Some(Self::new(
+                2000,
+                600,
+                4,
+                50,
+                -1.8,
+                RangeBox::new(2., 7.),
+                1.3,
+            )), // DPS: 461.5
 
-            5 => Some(Self::new(150, 40, 5, 10, -4.5, RangeBox::new(4., 6.), 0.7,)), // DPS: 461.5
-            6 => Some(Self::new(400,45, 6, 20, -3.8, RangeBox::new(4., 7.), 1.,)), // DPS: 461.5
-            7 => Some(Self::new(60, 30, 7, 15, -14., RangeBox::new(2., 7.), 0.4,)), // DPS: 461.5
-            8 => Some(Self::new(3500, 650, 8, 60, -2.3, RangeBox::new(2., 7.), 1.3,)), // DPS: 461.5
+            5 => Some(Self::new(150, 40, 5, 10, -4.5, RangeBox::new(4., 6.), 0.7)), // DPS: 461.5
+            6 => Some(Self::new(400, 45, 6, 20, -3.8, RangeBox::new(4., 7.), 1.)),  // DPS: 461.5
+            7 => Some(Self::new(60, 30, 7, 15, -14., RangeBox::new(2., 7.), 0.4)),  // DPS: 461.5
+            8 => Some(Self::new(
+                3500,
+                650,
+                8,
+                60,
+                -2.3,
+                RangeBox::new(2., 7.),
+                1.3,
+            )), // DPS: 461.5
             _ => None,
         }
     }
@@ -176,14 +191,38 @@ impl EnemyProceced {
     }
 }
 
-const E1: EnemyProceced = EnemyProceced {level: 1, weight: 1};
-const E2: EnemyProceced = EnemyProceced {level: 2, weight: 5};
-const E3: EnemyProceced = EnemyProceced {level: 3, weight: 4};
-const E4: EnemyProceced = EnemyProceced {level: 4, weight: 20};
-const E5: EnemyProceced = EnemyProceced {level: 5, weight: 4};
-const E6: EnemyProceced = EnemyProceced {level: 6, weight: 9};
-const E7: EnemyProceced = EnemyProceced {level: 7, weight: 9};
-const E8: EnemyProceced = EnemyProceced {level: 8, weight: 40};
+const E1: EnemyProceced = EnemyProceced {
+    level: 1,
+    weight: 1,
+};
+const E2: EnemyProceced = EnemyProceced {
+    level: 2,
+    weight: 5,
+};
+const E3: EnemyProceced = EnemyProceced {
+    level: 3,
+    weight: 4,
+};
+const E4: EnemyProceced = EnemyProceced {
+    level: 4,
+    weight: 20,
+};
+const E5: EnemyProceced = EnemyProceced {
+    level: 5,
+    weight: 4,
+};
+const E6: EnemyProceced = EnemyProceced {
+    level: 6,
+    weight: 9,
+};
+const E7: EnemyProceced = EnemyProceced {
+    level: 7,
+    weight: 9,
+};
+const E8: EnemyProceced = EnemyProceced {
+    level: 8,
+    weight: 40,
+};
 
 pub const RANK1: [EnemyProceced; 4] = [E1, E2, E3, E4];
-pub const RANK2: [EnemyProceced; 4]  = [E5, E6, E7, E8];
+pub const RANK2: [EnemyProceced; 4] = [E5, E6, E7, E8];

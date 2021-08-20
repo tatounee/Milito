@@ -1,6 +1,10 @@
 use std::collections::HashMap;
 
-use crate::{FPS, game::enemy::EnemyProceced, utils::{rng, GetRandom, Median}};
+use crate::{
+    game::enemy::EnemyProceced,
+    utils::{rng, GetRandom, Median},
+    FPS,
+};
 
 use super::Wave;
 
@@ -39,7 +43,7 @@ fn ter() {
             diff += get_difficulty(dura, i);
         }
         diff /= 10;
-        println!("[{}]: {}",i, diff)
+        println!("[{}]: {}", i, diff)
     }
 }
 
@@ -114,7 +118,7 @@ impl Wave {
 
         let mut wave = WavePerioded::from_markers(wave, difficulty, level);
 
-        let brutal_wave_count = ((wave.len() - 1) / 2 ).saturating_sub(1);
+        let brutal_wave_count = ((wave.len() - 1) / 2).saturating_sub(1);
 
         wave.assign_periode_type(brutal_wave_count);
 
@@ -196,10 +200,9 @@ impl WaveMarked {
                     let shift = get_shift(1, frac as f64, 0.8);
                     *marker -= marker.saturating_sub(shift);
                 }
-                
+
                 self.markers.sort_unstable();
             }
-
         }
 
         true

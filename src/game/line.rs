@@ -28,7 +28,12 @@ pub struct Line {
 
 impl Line {
     pub(crate) fn skip_one_wave(&mut self) -> u32 {
-        let mut wave = self.waves.borrow_mut().pop_front().unwrap_or_default().into_iter();
+        let mut wave = self
+            .waves
+            .borrow_mut()
+            .pop_front()
+            .unwrap_or_default()
+            .into_iter();
         let mut reward = 0;
         while !wave.is_ended() {
             if let Some(enemy) = wave.next() {
@@ -288,7 +293,9 @@ impl Line {
             if let Some(turret) = turret {
                 // TURRET WAIT
                 turret.wait();
-                if turret.can_attack() && is_enemies_in_front(&enemies_coord, turret.hitbox().start()) {
+                if turret.can_attack()
+                    && is_enemies_in_front(&enemies_coord, turret.hitbox().start())
+                {
                     shoots_buf.push(turret.shoot().unwrap())
                 }
             }

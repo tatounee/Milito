@@ -5,7 +5,7 @@ pub use prefabs::WAVES;
 
 use std::collections::HashMap;
 
-use crate::{FPS, utils::rng};
+use crate::{utils::rng, FPS};
 
 use super::enemy::Enemy;
 
@@ -102,8 +102,8 @@ fn print_wave(wave: &Wave) {
 fn er() {
     // let t1 = std::time::Instant::now();
     // for i in 10..21 {
-        let gen = Wave::generate(15);
-        print_wave(&gen);
+    let gen = Wave::generate(15);
+    print_wave(&gen);
     // }
     // let t2 = std::time::Instant::now();
     // println!("Time: {:?}", t2 - t1);

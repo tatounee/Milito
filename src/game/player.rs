@@ -31,7 +31,8 @@ impl Default for Player {
 impl Player {
     #[inline]
     fn update_shooting_speed(&mut self) {
-        self.shooting_speed = ((1. / 1.65f64.powi(self.level as i32 - 2) + 1.35) * FPS as f64) as u64
+        self.shooting_speed =
+            ((1. / 1.65f64.powi(self.level as i32 - 2) + 1.35) * FPS as f64) as u64
     }
 
     #[inline]

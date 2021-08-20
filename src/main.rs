@@ -60,10 +60,8 @@ impl Component for Model {
             link.callback(|_| Msg::Tick),
         );
 
-        let input_handler = KeyboardService::register_key_down(
-            &window(),
-            link.callback(Msg::KeyDown),
-        );
+        let input_handler =
+            KeyboardService::register_key_down(&window(), link.callback(Msg::KeyDown));
 
         let mut game = Game::default();
         game.add_waves(WAVES.clone());
@@ -100,9 +98,7 @@ impl Component for Model {
                     38 => self.game.move_player_up(),
                     39 => self.game.player_shoot(),
                     40 => self.game.move_player_down(),
-                    83 => {
-                        self.game.skip_one_wave()
-                    },
+                    83 => self.game.skip_one_wave(),
                     _ => (),
                 }
                 false

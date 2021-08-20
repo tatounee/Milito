@@ -17,7 +17,7 @@ use player::Player;
 use turret::Turret;
 
 use self::wave::{Wave, WaveLine};
-use crate::{FPS, log, utils::rng};
+use crate::{log, utils::rng, FPS};
 
 pub type Reward = u32;
 pub type Defeat = bool;
@@ -81,9 +81,11 @@ impl Default for Game {
 impl Game {
     pub(crate) fn skip_one_wave(&mut self) {
         if self.is_wave_ended() {
-            self.money += self.lines
-            .iter_mut()
-            .map(|line| line.skip_one_wave()).sum::<u32>();
+            self.money += self
+                .lines
+                .iter_mut()
+                .map(|line| line.skip_one_wave())
+                .sum::<u32>();
         }
     }
 

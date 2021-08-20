@@ -51,7 +51,8 @@ impl Median<f32> for Vec<f32> {
                 None
             } else {
                 Some(
-                    (self.get((self.len() / 2) - 1).unwrap() +  self.get(self.len() / 2).unwrap()) / 2.
+                    (self.get((self.len() / 2) - 1).unwrap() + self.get(self.len() / 2).unwrap())
+                        / 2.,
                 )
             }
         } else {
@@ -76,7 +77,7 @@ impl<T> GetRandom<T> for Vec<T> {
     }
 }
 
-impl<T> GetRandom<T>for [T] {
+impl<T> GetRandom<T> for [T] {
     fn get_random(&self) -> Option<&T> {
         self.get((rng() * self.len() as f64).floor() as usize)
     }
