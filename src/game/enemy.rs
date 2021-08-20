@@ -37,9 +37,9 @@ impl Enemy {
                 1.3,
             )), // DPS: 461.5
 
-            5 => Some(Self::new(150, 40, 5, 10, -4.5, RangeBox::new(4., 6.), 0.7)), // DPS: 461.5
-            6 => Some(Self::new(400, 45, 6, 20, -3.8, RangeBox::new(4., 7.), 1.)),  // DPS: 461.5
-            7 => Some(Self::new(60, 30, 7, 15, -14., RangeBox::new(2., 7.), 0.4)),  // DPS: 461.5
+            5 => Some(Self::new(200, 40, 5, 10, -4.5, RangeBox::new(4., 6.), 0.7)), // DPS: 57.1
+            6 => Some(Self::new(600, 45, 6, 20, -3.8, RangeBox::new(4., 7.), 1.)),  // DPS: 45
+            7 => Some(Self::new(70, 30, 7, 15, -14., RangeBox::new(2., 7.), 0.4)),  // DPS: 75
             8 => Some(Self::new(
                 3500,
                 650,
@@ -48,7 +48,7 @@ impl Enemy {
                 -2.3,
                 RangeBox::new(2., 7.),
                 1.3,
-            )), // DPS: 461.5
+            )), // DPS: 500
             _ => None,
         }
     }
@@ -217,7 +217,7 @@ const E6: EnemyProceced = EnemyProceced {
 };
 const E7: EnemyProceced = EnemyProceced {
     level: 7,
-    weight: 9,
+    weight: 7,
 };
 const E8: EnemyProceced = EnemyProceced {
     level: 8,

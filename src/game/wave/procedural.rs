@@ -54,7 +54,7 @@ fn get_periode_count(duration: u32) -> u32 {
 
 #[inline]
 fn get_difficulty(duration: u32, level: u32) -> u32 {
-    (duration as f64 * (1.8 + rng() / 7.)) as u32 + level.pow(2) * 6
+    (duration as f64 * (1.8 + rng() / 7.)) as u32 + level.pow(2) * 7
 }
 
 #[inline]
