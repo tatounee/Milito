@@ -148,10 +148,12 @@ impl Game {
     // Return true if there is not more wave
     #[inline]
     pub fn start_next_wave(&mut self) -> bool {
-        self.wave_counter += 1;
-        log!("counter:", self.wave_counter);
-        if self.wave_counter == 10 {
-            self.unlock_new_turret()
+        if self.is_wave_ended() {
+            self.wave_counter += 1;
+            log!("counter:", self.wave_counter);
+            if self.wave_counter == 10 {
+                self.unlock_new_turret()
+            }
         }
 
         self.lines

@@ -93,12 +93,32 @@ impl Component for Model {
                 true
             }
             Msg::KeyDown(key) => {
-                // log!("key code = {}", key.key_code());
-                match key.key_code() {
-                    38 => self.game.move_player_up(),
-                    39 => self.game.player_shoot(),
-                    40 => self.game.move_player_down(),
-                    83 => self.game.skip_one_wave(),
+                let code = key.code();
+                if code.len() == 6 && &code[0..5] == "Digit" {
+                    key.prevent_default();
+                    if let Ok(nbr) = code[5..6].parse::<usize>() {
+                        if let Some(turret) = self.game.turret_list().get(nbr.saturating_sub(1)) {
+                            self.link
+                                .send_message(Msg::NewAction(ActionOnBoard::PlaceTurret(
+                                    turret.as_ref().clone(),
+                                )))
+                        }
+                    }
+                };
+
+                match key.key().as_str() {
+                    "ArrowUp" => self.game.move_player_up(),
+                    "ArrowRight" => self.game.player_shoot(),
+                    "ArrowDown" => self.game.move_player_down(),
+                    "s" => self.game.skip_one_wave(),
+                    "g" => {
+                        self.game.use_god();
+                    }
+                    "d" => self
+                        .link
+                        .send_message(Msg::NewAction(ActionOnBoard::Delete)),
+                    " " => self.link.send_message(Msg::NextWave),
+                    "u" => self.link.send_message(Msg::UpgradePlayer),
                     _ => (),
                 }
                 false
