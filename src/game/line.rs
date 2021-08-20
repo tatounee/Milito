@@ -27,6 +27,17 @@ pub struct Line {
 }
 
 impl Line {
+    pub(crate) fn skip_one_wave(&mut self) -> u32 {
+        let mut wave = self.waves.borrow_mut().pop_front().unwrap_or_default().into_iter();
+        let mut reward = 0;
+        while !wave.is_ended() {
+            if let Some(enemy) = wave.next() {
+                reward += enemy.reward()
+            }
+        }
+        reward
+    }
+
     pub fn delete_turret(&mut self, x: usize) -> u32 {
         let mut refund = 0;
         if let Some(ref turret) = self.cells[x] {
@@ -94,7 +105,7 @@ impl Line {
     }
 
     #[inline]
-    pub fn next_wave(&mut self) -> Option<()> {
+    pub fn start_next_wave(&mut self) -> Option<()> {
         self.current_wave = Some(RefCell::new(
             self.waves.borrow_mut().pop_front()?.into_iter(),
         ));

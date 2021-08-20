@@ -31,7 +31,7 @@ impl Component for Header {
     type Properties = HeaderProps;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { props, link }
+        Self { link, props }
     }
 
     fn change(&mut self, props: Self::Properties) -> ShouldRender {

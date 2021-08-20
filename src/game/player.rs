@@ -23,7 +23,7 @@ impl Default for Player {
             line: 0,
             shooting_speed: 3 * FPS,
             waiting: 0,
-            upgrade_cost_text: Rc::new("300".to_owned()),
+            upgrade_cost_text: Rc::new("200".to_owned()),
         }
     }
 }
@@ -31,7 +31,6 @@ impl Default for Player {
 impl Player {
     #[inline]
     fn update_shooting_speed(&mut self) {
-        // self.shooting_speed = ((3. - (self.level as f64 - 1.) / 2.) * FPS as f64) as u64;
         self.shooting_speed = ((1. / 1.65f64.powi(self.level as i32 - 2) + 1.35) * FPS as f64) as u64
     }
 
@@ -42,7 +41,7 @@ impl Player {
 
     #[inline]
     pub fn upgrade_cost(&self) -> u32 {
-        self.level as u32 * 300
+        (self.level as u32).pow(2) * 100 + 100
     }
 
     pub fn upgrade(&mut self) -> bool {

@@ -25,23 +25,21 @@ impl Turret {
     pub fn new(
         x: f32,
         price: u32,
-        price_text: Rc<String>,
         level: u8,
         shoot: bool,
         life: u32,
         hitbox: RangeBox,
-        waiting: f32,
         attack_waiting: f32,
     ) -> Self {
         Self {
             x,
             price,
-            price_text,
+            price_text: Rc::new(format!("{}", price)),
             level,
             shoot,
             life,
             hitbox,
-            waiting,
+            waiting: 0.,
             attack_waiting,
         }
     }
@@ -51,34 +49,28 @@ impl Turret {
             1 => Some(Self::new(
                 0.,
                 100,
-                Rc::new("100".to_owned()),
                 level,
                 true,
                 120,
                 RangeBox::new(-2., 2.),
-                0.,
                 1.8 * FPS as f32, // 20 dmg, DSP: 11.1
             )),
             2 => Some(Self::new(
                 0.,
                 300,
-                Rc::new("300".to_owned()),
                 level,
                 true,
                 120,
                 RangeBox::new(-2., 2.),
-                0.,
                 2.5 * FPS as f32, // 90 dmg, DPS: 36
             )),
             3 => Some(Self::new(
                 0.,
                 200,
-                Rc::new("200".to_owned()),
                 level,
                 false,
                 5000,
                 RangeBox::new(-2., 2.),
-                0.,
                 0.,
             )),
             _ => None,

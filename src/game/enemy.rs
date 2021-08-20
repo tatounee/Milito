@@ -6,6 +6,7 @@ use super::projectile::Projectile;
 use super::BOARD_LENGHT;
 use crate::log;
 use crate::FPS;
+use crate::utils::{GetRandom, rng};
 
 #[derive(Debug, Clone)]
 pub struct Enemy {
@@ -84,7 +85,7 @@ impl Enemy {
     #[inline]
     pub fn scale(&self) -> f32 {
         let x = self.life as f32 / self.max_life;
-        1. / -10f32.powf(1.7 * (x + 0.1)) + 1.
+        1. / -(10f32.powf(1.7 * (x + 0.1))) + 1.
     }
 
     #[inline]
@@ -96,7 +97,7 @@ impl Enemy {
 
     #[inline]
     pub fn can_attack(&self) -> bool {
-        self.waiting == self.attack_waiting
+        (self.waiting - self.attack_waiting).abs() < f32::EPSILON
     }
 
     #[inline]

@@ -3,8 +3,8 @@ use yew::prelude::*;
 use crate::game::GOD_LEVEL_MAX;
 
 pub struct Footer {
-    props: FooterProps,
     link: ComponentLink<Self>,
+    props: FooterProps,
 }
 
 #[derive(Debug, Properties, Clone, PartialEq)]

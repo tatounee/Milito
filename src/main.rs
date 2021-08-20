@@ -14,7 +14,7 @@ use yew::{
 };
 
 use components::{Footer, FooterProps, Header, HeaderProps};
-use game::{turret::Turret, waves::WAVES, ActionOnBoard, Game};
+use game::{turret::Turret, wave::WAVES, ActionOnBoard, Game};
 
 use crate::components::{Board, GameRow, GameRowProps};
 
@@ -31,6 +31,7 @@ enum Msg {
     Tick,
 }
 
+#[allow(dead_code)]
 struct Model {
     link: ComponentLink<Self>,
     game: Game,
@@ -61,7 +62,7 @@ impl Component for Model {
 
         let input_handler = KeyboardService::register_key_down(
             &window(),
-            link.callback(|key_event: KeyboardEvent| Msg::KeyDown(key_event)),
+            link.callback(Msg::KeyDown),
         );
 
         let mut game = Game::default();
@@ -94,10 +95,14 @@ impl Component for Model {
                 true
             }
             Msg::KeyDown(key) => {
+                // log!("key code = {}", key.key_code());
                 match key.key_code() {
                     38 => self.game.move_player_up(),
                     39 => self.game.player_shoot(),
                     40 => self.game.move_player_down(),
+                    83 => {
+                        self.game.skip_one_wave()
+                    },
                     _ => (),
                 }
                 false
@@ -118,14 +123,12 @@ impl Component for Model {
                 if self.game.action.as_ref() == Some(&action) {
                     self.game.action = None;
                     self.show_grid = false;
+                } else if self.game.can_execut_action(&action) {
+                    self.game.action = Some(action);
+                    self.show_grid = true;
                 } else {
-                    if self.game.can_execut_action(&action) {
-                        self.game.action = Some(action);
-                        self.show_grid = true;
-                    } else {
-                        self.game.action = None;
-                        self.show_grid = false;
-                    }
+                    self.game.action = None;
+                    self.show_grid = false;
                 };
                 false
             }
@@ -134,7 +137,7 @@ impl Component for Model {
                 false
             }
             Msg::NextWave => {
-                self.no_more_wave = self.game.next_wave();
+                self.no_more_wave = self.game.start_next_wave();
                 false
             }
         }
@@ -180,11 +183,7 @@ impl Component for Model {
                 <Header with header_props/>
                 <Board show_grid=self.show_grid>
                     { for self.game.lines.iter().enumerate().map(|(y, line)| {
-                        let cells = line.cells.iter().map(|opt| if let Some(turret) = opt {
-                            Some(turret.level())
-                        } else {
-                            None
-                        }).collect::<Vec<_>>();
+                        let cells = line.cells.iter().map(|opt| opt.as_ref().map(|turret| turret.level())).collect::<Vec<_>>();
 
                         let player_level = if self.game.player.line == y {
                             Some(self.game.player.level)

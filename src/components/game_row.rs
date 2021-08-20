@@ -95,7 +95,7 @@ impl Component for GameRow {
                         });
                         html_nested!(
                             <button class="cell" onclick=self.link.callback(move |_| Msg::ExectuteAction(x)) disabled=!self.props.show_grid || (turret.is_some() && !self.props.delete_mode)>
-                                { turret.unwrap_or(html_nested!()) }
+                                { turret.unwrap_or_else(|| html_nested!()) }
                             </button>
                         )
                     }) }

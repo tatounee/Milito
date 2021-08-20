@@ -7,7 +7,6 @@ pub mod player;
 pub mod projectile;
 pub mod turret;
 pub mod wave;
-pub mod waves;
 
 use std::{cell::RefCell, collections::VecDeque, rc::Rc, vec};
 
@@ -80,6 +79,14 @@ impl Default for Game {
 }
 
 impl Game {
+    pub(crate) fn skip_one_wave(&mut self) {
+        if self.is_wave_ended() {
+            self.money += self.lines
+            .iter_mut()
+            .map(|line| line.skip_one_wave()).sum::<u32>();
+        }
+    }
+
     #[inline]
     pub fn turret_list(&self) -> Rc<Vec<Rc<Turret>>> {
         self.turret_list.clone()
@@ -131,10 +138,10 @@ impl Game {
 
     // Return true if there is not more wave
     #[inline]
-    pub fn next_wave(&mut self) -> bool {
+    pub fn start_next_wave(&mut self) -> bool {
         self.lines
             .iter_mut()
-            .map(|line| line.next_wave())
+            .map(|line| line.start_next_wave())
             .collect::<Vec<_>>()
             .iter()
             .all(|opt| opt.is_none())
@@ -187,8 +194,8 @@ impl Game {
 
     pub fn can_execut_action(&self, action: &ActionOnBoard) -> bool {
         match action {
-            &ActionOnBoard::PlaceTurret(ref turret) => self.money >= turret.price(),
-            &ActionOnBoard::Delete => true,
+            ActionOnBoard::PlaceTurret(ref turret) => self.money >= turret.price(),
+            ActionOnBoard::Delete => true,
         }
     }
 
@@ -209,15 +216,13 @@ impl Game {
                 }
             }
         }
-        return false;
+        false
     }
 
     pub fn upgrade_player(&mut self) {
         let upgrade_cost = self.player.upgrade_cost();
-        if self.money >= upgrade_cost {
-            if self.player.upgrade() {
-                self.money -= upgrade_cost;
-            }
+        if self.money >= upgrade_cost && self.player.upgrade() {
+            self.money -= upgrade_cost;
         }
     }
 
