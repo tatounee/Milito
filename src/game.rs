@@ -10,7 +10,7 @@ pub mod wave;
 
 use std::{cell::RefCell, collections::VecDeque, rc::Rc, vec};
 
-use js_sys::Math::random as js_random;
+use js_sys::Math::{log, random as js_random};
 
 use line::Line;
 use player::Player;
@@ -54,6 +54,7 @@ pub struct Game {
     pub player: Player,
     pub action: Option<ActionOnBoard>,
     pub waves: VecDeque<Wave>,
+    wave_counter: usize,
     pub god: u32,
     pub defeat: bool,
     turret_list: Rc<Vec<Rc<Turret>>>,
@@ -68,6 +69,7 @@ impl Default for Game {
             action: None,
             god: 1,
             waves: VecDeque::new(),
+            wave_counter: 0,
             defeat: false,
             turret_list: Rc::new(vec![
                 Rc::new(Turret::prefab_turret(1).unwrap()),
@@ -81,6 +83,11 @@ impl Default for Game {
 impl Game {
     pub(crate) fn skip_one_wave(&mut self) {
         if self.is_wave_ended() {
+            self.wave_counter += 1;
+            if self.wave_counter == 10 {
+                self.unlock_new_turret()
+            }
+
             self.money += self
                 .lines
                 .iter_mut()
@@ -141,12 +148,30 @@ impl Game {
     // Return true if there is not more wave
     #[inline]
     pub fn start_next_wave(&mut self) -> bool {
+        self.wave_counter += 1;
+        log!("counter:", self.wave_counter);
+        if self.wave_counter == 10 {
+            self.unlock_new_turret()
+        }
+
         self.lines
             .iter_mut()
             .map(|line| line.start_next_wave())
             .collect::<Vec<_>>()
             .iter()
             .all(|opt| opt.is_none())
+    }
+
+    #[inline]
+    fn unlock_new_turret(&mut self) {
+        self.turret_list = Rc::new(vec![
+            Rc::new(Turret::prefab_turret(1).unwrap()),
+            Rc::new(Turret::prefab_turret(2).unwrap()),
+            Rc::new(Turret::prefab_turret(3).unwrap()),
+            Rc::new(Turret::prefab_turret(4).unwrap()),
+            Rc::new(Turret::prefab_turret(5).unwrap()),
+            Rc::new(Turret::prefab_turret(6).unwrap()),
+        ])
     }
 
     #[inline]

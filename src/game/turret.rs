@@ -53,7 +53,7 @@ impl Turret {
                 true,
                 120,
                 RangeBox::new(-2., 2.),
-                1.8 * FPS as f32, // 20 dmg, DSP: 11.1
+                0.8 * FPS as f32, // 10 dmg, DSP: 12.5
             )),
             2 => Some(Self::new(
                 0.,
@@ -70,6 +70,33 @@ impl Turret {
                 level,
                 false,
                 5000,
+                RangeBox::new(-2., 2.),
+                0.,
+            )),
+            4 => Some(Self::new(
+                0.,
+                400,
+                level,
+                true,
+                300,
+                RangeBox::new(-2., 2.),
+                0.8 * FPS as f32, // 10 dmg, DSP: 12.5
+            )),
+            5 => Some(Self::new(
+                0.,
+                700,
+                level,
+                true,
+                300,
+                RangeBox::new(-2., 2.),
+                2.5 * FPS as f32, // 90 dmg, DPS: 36
+            )),
+            6 => Some(Self::new(
+                0.,
+                500,
+                level,
+                false,
+                10000,
                 RangeBox::new(-2., 2.),
                 0.,
             )),

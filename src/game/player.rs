@@ -5,7 +5,7 @@ use super::NBR_OF_LINE;
 use crate::log;
 use crate::FPS;
 
-const PLAYER_MAX_LEVEL: u8 = 4;
+const PLAYER_MAX_LEVEL: u8 = 6;
 
 #[derive(Debug)]
 pub struct Player {

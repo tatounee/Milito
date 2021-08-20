@@ -85,7 +85,7 @@ impl Projectile {
         match level {
             1 => Some(Self::new(
                 x - 1.,
-                20,
+                10,
                 level,
                 50. / FPS as f32,
                 RangeBox::new(1., 2.),
@@ -94,6 +94,22 @@ impl Projectile {
             2 => Some(Self::new(
                 x - 1.,
                 90,
+                level,
+                35. / FPS as f32,
+                RangeBox::new(1., 2.),
+                false,
+            )),
+            4 => Some(Self::new(
+                x - 1.,
+                60,
+                level,
+                50. / FPS as f32,
+                RangeBox::new(1., 2.),
+                false,
+            )),
+            5 => Some(Self::new(
+                x - 1.,
+                190,
                 level,
                 35. / FPS as f32,
                 RangeBox::new(1., 2.),
