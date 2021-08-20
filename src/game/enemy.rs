@@ -158,3 +158,31 @@ impl Collide<&Projectile> for &Enemy {
         self.hitbox().collide(&with.hitbox())
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct EnemyProceced {
+    pub level: u8,
+    pub weight: u32,
+}
+
+impl EnemyProceced {
+    pub fn new_random(proba_rank2_enemy: f64) -> Self {
+        if rng() > proba_rank2_enemy {
+            RANK1.get_random().unwrap().clone()
+        } else {
+            RANK2.get_random().unwrap().clone()
+        }
+    }
+}
+
+const E1: EnemyProceced = EnemyProceced {level: 1, weight: 1};
+const E2: EnemyProceced = EnemyProceced {level: 2, weight: 5};
+const E3: EnemyProceced = EnemyProceced {level: 3, weight: 4};
+const E4: EnemyProceced = EnemyProceced {level: 4, weight: 20};
+const E5: EnemyProceced = EnemyProceced {level: 5, weight: 4};
+const E6: EnemyProceced = EnemyProceced {level: 6, weight: 9};
+const E7: EnemyProceced = EnemyProceced {level: 7, weight: 9};
+const E8: EnemyProceced = EnemyProceced {level: 8, weight: 40};
+
+pub const RANK1: [EnemyProceced; 4] = [E1, E2, E3, E4];
+pub const RANK2: [EnemyProceced; 4]  = [E5, E6, E7, E8];

@@ -108,6 +108,18 @@ impl Game {
     }
 
     #[inline]
+    pub fn generate_wave(&mut self) {
+        self.add_wave(Wave::generate(self.waves.len() as u32 + 1))
+    }
+
+    #[inline]
+    pub fn generate_waves(&mut self, amount: u32) {
+        for _ in 0..amount {
+            self.generate_wave()
+        }
+    }
+
+    #[inline]
     pub fn is_delete_mode(&self) -> bool {
         matches!(self.action, Some(ActionOnBoard::Delete))
     }

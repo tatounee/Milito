@@ -1,6 +1,6 @@
 use lazy_static::lazy_static;
 
-use super::wave::Wave;
+use super::Wave;
 use crate::wave;
 
 lazy_static! {

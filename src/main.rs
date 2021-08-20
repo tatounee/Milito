@@ -66,7 +66,8 @@ impl Component for Model {
 
         let mut game = Game::default();
         game.add_waves(WAVES.clone());
-        game.enemy_wave_assign_line();
+        game.generate_waves(10);
+        game.assign_line_for_enemies();
 
         Self {
             link,

@@ -1,6 +1,15 @@
+mod prefabs;
+mod procedural;
+
+pub use prefabs::WAVES;
+
 use std::collections::HashMap;
 
+use crate::{FPS, utils::rng};
+
 use super::enemy::Enemy;
+
+use js_sys::Math::random as js_random;
 
 // Exemple:
 // let lvl1 = wave![
@@ -13,19 +22,16 @@ macro_rules! wave {
         {
             let mut troops = std::collections::HashMap::new();
             $(
-                let mut vec = Vec::new();
-                $(
-                    vec.push($lvl);
-                )*
+                let levels = vec![$($lvl,)*];
                 let frame = $secs * crate::FPS;
-                troops.insert(frame, vec);
+                troops.insert(frame, levels);
             )*
-            Wave {troops}
+            Wave { troops }
         }
     };
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct Wave {
     pub troops: HashMap<u64, Vec<u8>>,
 }
@@ -61,7 +67,7 @@ impl Iterator for IteratorWaveLine {
         if self.frame <= self.frame_max {
             let item = self.troops.remove(&self.frame);
             self.frame += 1;
-            item.map(|lvl| Enemy::prefab(lvl)).flatten()
+            item.map(Enemy::prefab).flatten()
         } else {
             None
         }
@@ -81,4 +87,25 @@ impl IntoIterator for WaveLine {
             troops: self.troops,
         }
     }
+}
+
+fn print_wave(wave: &Wave) {
+    let mut keys = wave.troops.keys().collect::<Vec<_>>();
+    keys.sort_unstable();
+
+    for key in keys {
+        println!("{} => {:?}", key / FPS, wave.troops[key])
+    }
+}
+
+#[test]
+fn er() {
+    // let t1 = std::time::Instant::now();
+    // for i in 10..21 {
+        let gen = Wave::generate(15);
+        print_wave(&gen);
+    // }
+    // let t2 = std::time::Instant::now();
+    // println!("Time: {:?}", t2 - t1);
+    // print_wave(&gen);
 }
