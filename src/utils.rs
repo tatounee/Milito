@@ -35,8 +35,8 @@ pub fn log_1(data_1: &str) {
 #[allow(unused_unsafe)]
 pub fn rng() -> f64 {
     // SAFETY: Milito is design to be runned into a web browser
-    // unsafe { random() }
-    rand::random::<f64>()
+    unsafe { random() }
+    // rand::random::<f64>()
 }
 
 pub trait Median<T> {

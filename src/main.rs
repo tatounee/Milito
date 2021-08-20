@@ -151,7 +151,6 @@ impl Component for Model {
                 .game
                 .action
                 .as_ref()
-                .as_ref()
                 .map(|act| act.get_turret_level())
                 .flatten(),
             player_level: self.game.player.level,
