@@ -54,7 +54,7 @@ fn get_periode_count(duration: u32) -> u32 {
 
 #[inline]
 fn get_difficulty(duration: u32, level: u32) -> u32 {
-    (duration as f64 * (1.8 + rng() / 7.)) as u32 + level.pow(2) * 7
+    (duration as f64 * (1.8 + rng() / 7.) + 1.4f64.powi(level as i32 + 11) * 4.) as u32// level.pow(2) * 5
 }
 
 #[inline]
@@ -295,7 +295,7 @@ impl WavePerioded {
 
     fn assign_difficulty(&mut self) {
         let basic_diff = (self.difficulty / self.len() as u32) as f32;
-        let peaceful_diff = basic_diff * 0.9;
+        let peaceful_diff = basic_diff * 0.8;
         let brutal_diff = basic_diff * 1.2;
 
         let mut brutal_powers = Vec::new();
@@ -507,7 +507,7 @@ impl PeriodeType {
 
     #[inline]
     fn new_random_brutal() -> Self {
-        if rng() > 0.65 {
+        if rng() > 0.55 {
             PeriodeType::Block
         } else {
             PeriodeType::Group

@@ -101,7 +101,7 @@ impl Projectile {
             )),
             4 => Some(Self::new(
                 x - 1.,
-                60,
+                50,
                 level,
                 50. / FPS as f32,
                 RangeBox::new(1., 2.),

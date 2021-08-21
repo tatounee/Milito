@@ -80,7 +80,7 @@ impl Turret {
                 true,
                 300,
                 RangeBox::new(-2., 2.),
-                0.8 * FPS as f32, // 10 dmg, DSP: 12.5
+                0.8 * FPS as f32, // 50 dmg, DSP: 75
             )),
             5 => Some(Self::new(
                 0.,
@@ -89,7 +89,7 @@ impl Turret {
                 true,
                 300,
                 RangeBox::new(-2., 2.),
-                2.5 * FPS as f32, // 90 dmg, DPS: 36
+                2. * FPS as f32, // 190 dmg, DPS: 95
             )),
             6 => Some(Self::new(
                 0.,
