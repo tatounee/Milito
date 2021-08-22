@@ -216,11 +216,11 @@ const E6: EnemyProceced = EnemyProceced {
 };
 const E7: EnemyProceced = EnemyProceced {
     level: 7,
-    weight: 7,
+    weight: 5,
 };
 const E8: EnemyProceced = EnemyProceced {
     level: 8,
-    weight: 40,
+    weight: 55,
 };
 
 pub const RANK1: [EnemyProceced; 4] = [E1, E2, E3, E4];

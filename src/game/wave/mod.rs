@@ -56,7 +56,7 @@ pub struct IteratorWaveLine {
 
 impl IteratorWaveLine {
     pub fn is_ended(&self) -> bool {
-        self.frame >= self.frame_max
+        self.frame > self.frame_max
     }
 }
 

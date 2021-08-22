@@ -54,9 +54,9 @@ pub struct Game {
     pub action: Option<ActionOnBoard>,
     pub waves: VecDeque<Wave>,
     wave_counter: usize,
+    max_wave: usize,
     pub god: u32,
     pub stats: GameStats,
-    no_more_wave: bool,
     turret_list: Rc<Vec<Rc<Turret>>>,
 }
 
@@ -70,8 +70,8 @@ impl Default for Game {
             god: 1,
             waves: VecDeque::new(),
             wave_counter: 0,
+            max_wave: 0,
             stats: GameStats::Playing,
-            no_more_wave: false,
             turret_list: Rc::new(vec![
                 Rc::new(Turret::prefab_turret(1).unwrap()),
                 Rc::new(Turret::prefab_turret(2).unwrap()),
@@ -83,7 +83,7 @@ impl Default for Game {
 
 impl Game {
     pub(crate) fn skip_one_wave(&mut self) {
-        if self.is_wave_ended() {
+        if self.is_wave_ended() && !self.is_no_more_wave() {
             self.wave_counter += 1;
             if self.wave_counter == 10 {
                 self.unlock_new_turret()
@@ -114,6 +114,7 @@ impl Game {
 
     #[inline]
     pub fn add_wave(&mut self, wave: Wave) {
+        self.max_wave += 1;
         self.waves.push_back(wave)
     }
 
@@ -126,7 +127,7 @@ impl Game {
 
     #[inline]
     pub fn generate_wave(&mut self) {
-        self.add_wave(Wave::generate(self.waves.len() as u32 + 1))
+        self.add_wave(Wave::generate(self.max_wave as u32 + 1))
     }
 
     #[inline]
@@ -143,24 +144,23 @@ impl Game {
 
     #[inline]
     pub fn wave(&self) -> usize {
-        self.lines[0].wave()
+        self.wave_counter
     }
 
     #[inline]
     pub fn start_next_wave(&mut self) {
-        if self.is_wave_ended() {
+        if self.is_wave_ended() && !self.is_no_more_wave() {
             self.wave_counter += 1;
             if self.wave_counter == 10 {
                 self.unlock_new_turret()
             }
 
-            self.no_more_wave = self
+            self
                 .lines
                 .iter_mut()
-                .map(|line| line.start_next_wave())
-                .collect::<Vec<_>>()
-                .iter()
-                .all(|opt| opt.is_none())
+                .for_each(|line| {
+                    line.start_next_wave();
+                })
         }
     }
 
@@ -192,21 +192,31 @@ impl Game {
     }
 
     #[inline]
+    pub fn is_no_more_wave(&self) -> bool {
+        self.wave_counter > self.max_wave
+    }
+
+    #[inline]
     pub fn have_action(&self) -> bool {
         self.action.is_some()
+    }
+
+    #[inline]
+    pub fn is_paused(&self) -> bool {
+        matches!(self.stats, GameStats::Pause(_))
     }
 
     pub fn assign_line_for_enemies(&mut self) {
         let mut wave_packs = vec![VecDeque::new(); NBR_OF_LINE];
 
-        for wave in self.waves.iter_mut() {
+        for mut wave in self.waves.drain(..) {
             let mut wave_lines = (0..NBR_OF_LINE)
                 .map(|_| WaveLine::default())
                 .collect::<Vec<WaveLine>>();
-            let mut keys = wave.troops.keys().cloned().collect::<Vec<u64>>();
-            keys.sort_unstable();
+            let mut frames = wave.troops.keys().cloned().collect::<Vec<u64>>();
+            frames.sort_unstable();
 
-            for frame in keys {
+            for frame in frames {
                 let levels = wave.troops.get_mut(&frame).unwrap();
 
                 for line in get_rng_lines(self.lines.len(), levels.len()) {
@@ -291,7 +301,7 @@ impl Game {
             let reward = result.iter().map(|r| r.0).sum::<u32>();
             self.money += reward;
 
-            if !self.is_remaining_enemies() && self.no_more_wave {
+            if !self.is_remaining_enemies() && self.is_no_more_wave() {
                 self.stats = GameStats::Victory
             } else if result.iter().any(|r| r.1) {
                 self.stats = GameStats::Defeat

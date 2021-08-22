@@ -11,11 +11,12 @@ pub struct Hover {
 pub struct HoverProps {
     pub game_stats: GameStats,
     pub make_pause: Callback<()>,
-    pub help: bool,
+    pub more_wave: Callback<u32>,
 }
 
 pub enum Msg {
     Unpause,
+    MoreWave(u32),
 }
 
 impl Component for Hover {
@@ -37,9 +38,9 @@ impl Component for Hover {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::Unpause => self.props.make_pause.emit(()),
+            Msg::Unpause => {self.props.make_pause.emit(()); false},
+            Msg::MoreWave(amount) => {self.props.more_wave.emit(amount); true},
         }
-        false
     }
 
     fn view(&self) -> Html {
@@ -72,8 +73,20 @@ impl Component for Hover {
                         <div class="stats">{if matches!(x, GameStats::Victory) { "Victory"} else { "Defeat" }}</div>
                         <p>
                         {"If you want to replay, press " } <kbd> { "F5" } </kbd> { " or reload the page." } <br/>
-                        { "I will tell you a secret, you can skip a wave if you press " } <kbd> { "S" } </kbd> { " when no wave is running." }
+                        { if matches!(x, GameStats::Victory) { 
+                            html_nested! { <> <br/>
+                                { "PS: I will tell you a secret, you can active a cheat mode by typing \"ilovetatoune\" and then, you can skip a wave if you press " } <kbd> { "S" } </kbd> { " when no wave is running." } 
+                                </>}
+                        } else {
+                            html_nested! {}
+                        }}
                         </p>
+                        { if matches!(x, GameStats::Victory) {
+                            html_nested! { 
+                                <button class="more-wave" onclick=self.link.callback(|_| Msg::MoreWave(5))>{"I want to play 5 more wave !"}</button> }
+                        } else {
+                            html_nested! {}
+                        }}
                     </div>
                 </div>
             },

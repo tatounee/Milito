@@ -28,13 +28,14 @@ const FRAME_TIME: u64 = 1000 / FPS;
 
 enum Msg {
     KeyDown(KeyboardEvent),
-    KillAll,
     ExectuteAction(usize, usize),
     NewAction(ActionOnBoard),
     AbortAction(Option<MouseEvent>),
+    UpgradePlayer,
+    KillAll,
     NextWave,
     Pause(bool),
-    UpgradePlayer,
+    MoreWave(u32),
     Tick,
 }
 
@@ -71,10 +72,10 @@ impl Component for Model {
 
         let mut game = Game::default();
         game.add_waves(WAVES.clone());
-        game.generate_waves(10);
+        game.generate_waves(5);
         game.assign_line_for_enemies();
 
-        let cheat = Cheat::new("ilovetatoune");
+        let cheat = Cheat::new(if cfg!(debug_assertions) {""} else {"ilovetatoune"});
 
         Self {
             link,
@@ -93,41 +94,51 @@ impl Component for Model {
                 true
             }
             Msg::KeyDown(event) => {
-                let code = event.code();
                 let key = event.key();
-                if code.len() == 6 && &code[0..5] == "Digit" {
-                    event.prevent_default();
-                    if let Ok(nbr) = code[5..6].parse::<usize>() {
-                        if let Some(turret) = self.game.turret_list().get(nbr.saturating_sub(1)) {
-                            self.link
-                                .send_message(Msg::NewAction(ActionOnBoard::PlaceTurret(
-                                    turret.as_ref().clone(),
-                                )))
+                if !self.game.is_paused() {
+                    let code = event.code();
+                    if code.len() == 6 && &code[0..5] == "Digit" {
+                        event.prevent_default();
+                        if let Ok(nbr) = code[5..6].parse::<usize>() {
+                            if nbr == 7 {
+                                self.link.send_message(Msg::MoreWave(2 as u32));
+                            }
+                            if let Some(turret) = self.game.turret_list().get(nbr.saturating_sub(1)) {
+                                self.link
+                                    .send_message(Msg::NewAction(ActionOnBoard::PlaceTurret(
+                                        turret.as_ref().clone(),
+                                    )))
+                            }
                         }
+                    };
+    
+                    match key.as_str() {
+                        "ArrowUp" => self.game.move_player_up(),
+                        "ArrowRight" => self.game.player_shoot(),
+                        "ArrowDown" => self.game.move_player_down(),
+                        "s" if self.cheat.is_active() => self.game.skip_one_wave(),
+                        "g" => {
+                            self.game.use_god();
+                        }
+                        "d" => self
+                            .link
+                            .send_message(Msg::NewAction(ActionOnBoard::Delete)),
+                        " " => self.link.send_message(Msg::NextWave),
+                        "u" => self.link.send_message(Msg::UpgradePlayer),
+                        "Escape" => {
+                            if self.game.have_action() {
+                                self.link.send_message(Msg::AbortAction(None))
+                            } else {
+                                self.link.send_message(Msg::Pause(true))
+                            }
+                        }
+                        _ => (),
                     }
-                };
+                } else {
 
-                match key.as_str() {
-                    "ArrowUp" => self.game.move_player_up(),
-                    "ArrowRight" => self.game.player_shoot(),
-                    "ArrowDown" => self.game.move_player_down(),
-                    "s" if self.cheat.is_active() => self.game.skip_one_wave(),
-                    "g" => {
-                        self.game.use_god();
+                    if key.as_str() == "Escape" {
+                        self.link.send_message(Msg::Pause(false))
                     }
-                    "d" => self
-                        .link
-                        .send_message(Msg::NewAction(ActionOnBoard::Delete)),
-                    " " => self.link.send_message(Msg::NextWave),
-                    "u" => self.link.send_message(Msg::UpgradePlayer),
-                    "Escape" => {
-                        if self.game.have_action() {
-                            self.link.send_message(Msg::AbortAction(None))
-                        } else {
-                            self.link.send_message(Msg::Pause(true))
-                        }
-                    }
-                    _ => (),
                 }
 
                 if key.len() == 1 {
@@ -179,6 +190,12 @@ impl Component for Model {
                 self.game.pause(toggle);
                 false
             }
+            Msg::MoreWave(amount) => {
+                self.game.generate_waves(amount);
+                self.game.assign_line_for_enemies();
+                self.game.stats = GameStats::Playing;
+                false
+            }
             Msg::NextWave => {
                 self.game.start_next_wave();
                 false
@@ -193,8 +210,8 @@ impl Component for Model {
     fn view(&self) -> Html {
         let hover_props = HoverProps {
             game_stats: self.game.stats.clone(),
-            help: matches!(self.game.stats, GameStats::Pause(_)),
             make_pause: self.link.callback(|_| Msg::Pause(false)),
+            more_wave: self.link.callback(|amount| Msg::MoreWave(amount)),
         };
 
         let header_props = HeaderProps {

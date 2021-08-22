@@ -22,7 +22,6 @@ pub struct Line {
     pub projectiles: RefCell<Vec<Projectile>>,
     pub enemies: RefCell<Vec<Enemy>>,
     pub waves: RefCell<VecDeque<WaveLine>>,
-    nbr_of_wave: usize,
     current_wave: Option<RefCell<IteratorWaveLine>>,
 }
 
@@ -34,6 +33,7 @@ impl Line {
             .pop_front()
             .unwrap_or_default()
             .into_iter();
+
         let mut reward = 0;
         while !wave.is_ended() {
             if let Some(enemy) = wave.next() {
@@ -63,13 +63,7 @@ impl Line {
 
     #[inline]
     pub fn set_waves(&mut self, waves: RefCell<VecDeque<WaveLine>>) {
-        self.nbr_of_wave = waves.borrow().len();
         self.waves = waves;
-    }
-
-    #[inline]
-    pub fn wave(&self) -> usize {
-        self.nbr_of_wave - self.waves.borrow().len()
     }
 
     #[inline]
@@ -319,7 +313,6 @@ impl Default for Line {
             projectiles: RefCell::new(Vec::new()),
             enemies: RefCell::new(Vec::new()),
             waves: RefCell::new(VecDeque::new()),
-            nbr_of_wave: 0,
             current_wave: None,
         }
     }

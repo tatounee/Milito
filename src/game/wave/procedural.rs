@@ -79,12 +79,22 @@ impl Periode {
     fn power(&self) -> f32 {
         self.difficulty / self.duration.duration
     }
+
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Duration {
     start: f32,
     duration: f32,
+}
+
+impl Duration {
+    #[inline]
+    fn get_new_position(&self) -> u64 {
+        let position_relative =
+        (rng() * self.duration as f64 * FPS as f64).floor() as u64;
+        position_relative + self.start as u64 * FPS
+    }
 }
 
 #[derive(Debug)]
@@ -390,6 +400,7 @@ impl WavePerioded {
     fn pack_enemies(&mut self) {
         for periode in self.periodes.iter_mut() {
             let mut new_storage: HashMap<u64, Vec<u8>> = HashMap::new();
+            let duration = periode.duration.clone();
             if let EnemyStorage::Free(ref mut storage) = periode.enemies {
                 let mut levels = storage.keys().cloned().collect::<Vec<u8>>();
 
@@ -404,9 +415,7 @@ impl WavePerioded {
                     if *quantity == 0 {
                         levels.remove(idx);
                     }
-                    let mut position = (rng() * periode.duration.duration as f64 * FPS as f64)
-                        .floor() as u64
-                        + periode.duration.start as u64;
+                    let mut position = duration.get_new_position();
                     let mut echec = false;
                     let mut pass = 0;
                     while new_storage.contains_key(&position) && new_storage[&position].len() >= 5 {
@@ -415,8 +424,7 @@ impl WavePerioded {
                             echec = true;
                             break;
                         }
-                        position = (rng() * periode.duration.duration as f64).floor() as u64
-                            + periode.duration.start as u64;
+                        position = duration.get_new_position();
                     }
 
                     if !echec {
