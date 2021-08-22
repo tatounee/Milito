@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     game::enemy::EnemyProceced,
+    log,
     utils::{rng, GetRandom, Median},
     FPS,
 };
@@ -148,11 +149,7 @@ impl Wave {
             });
 
         troops.map(|troops| {
-            let mut troops_fps = HashMap::with_capacity(troops.len());
-            for (key, enemies) in troops.into_iter() {
-                troops_fps.insert(key * FPS, enemies);
-            }
-            Self { troops: troops_fps }
+            Self { troops }
         })
     }
 }
@@ -226,18 +223,22 @@ impl WavePerioded {
     }
 
     fn from_markers(markers: WaveMarked, difficulty: u32, level: u32) -> Self {
-        let last_marker = 0;
+        let mut last_marker = 0;
         let periodes = markers
             .markers
             .into_iter()
-            .map(|marker| Periode {
-                type_: PeriodeType::Bruine,
-                duration: Duration {
-                    start: last_marker as f32,
-                    duration: (marker - last_marker) as f32,
-                },
-                difficulty: 0.,
-                enemies: EnemyStorage::Free(HashMap::new()),
+            .map(|marker| {
+                let periode = Periode {
+                    type_: PeriodeType::Bruine,
+                    duration: Duration {
+                        start: last_marker as f32,
+                        duration: (marker - last_marker) as f32,
+                    },
+                    difficulty: 0.,
+                    enemies: EnemyStorage::Free(HashMap::new()),
+                };
+                last_marker = marker;
+                periode
             })
             .collect::<Vec<Periode>>();
 
@@ -253,7 +254,7 @@ impl WavePerioded {
             periode.type_ = PeriodeType::new_random_brutal()
         }
 
-        let mut spaces = self.periodes[0..self.periodes.len().saturating_sub(2)]
+        let mut spaces = self.periodes[0..self.periodes.len().saturating_sub(1)]
             .iter()
             .enumerate()
             .skip(1)
@@ -261,15 +262,15 @@ impl WavePerioded {
             .collect::<Vec<_>>();
 
         for _ in 0..brutal_wave_count {
-            if let Some((idx, _)) = spaces
+            if let Some((space_idx, (idx, _))) = spaces
                 .iter()
-                .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
-                .cloned()
+                .enumerate()
+                .min_by(|(_, (_, a)), (_, (_, b))| a.partial_cmp(b).unwrap())
             {
-                if let Some(periode) = self.periodes.get_mut(idx) {
+                if let Some(periode) = self.periodes.get_mut(*idx) {
                     periode.type_ = PeriodeType::new_random_brutal()
                 }
-                spaces.remove(idx - 1);
+                spaces.remove(space_idx);
             }
         }
 
@@ -278,16 +279,16 @@ impl WavePerioded {
                 break;
             }
 
-            if let Some((idx, _)) = spaces
+            if let Some((space_idx, (idx, _))) = spaces
                 .iter()
-                .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
-                .cloned()
+                .enumerate()
+                .min_by(|(_, (_, a)), (_, (_, b))| a.partial_cmp(b).unwrap())
             {
                 self.fix_one_of_tree_aligned();
 
-                if let Some(new_periode) = self.periodes.get_mut(idx) {
+                if let Some(new_periode) = self.periodes.get_mut(*idx) {
                     new_periode.type_ = PeriodeType::new_random_brutal();
-                    spaces.remove(idx - 1);
+                    spaces.remove(space_idx);
                 }
             }
         }
@@ -405,8 +406,7 @@ impl WavePerioded {
                     if *quantity == 0 {
                         levels.remove(idx);
                     }
-
-                    let mut position = (rng() * periode.duration.duration as f64).floor() as u64
+                    let mut position = (rng() * periode.duration.duration as f64 * FPS as f64).floor() as u64
                         + periode.duration.start as u64;
                     let mut echec = false;
                     let mut pass = 0;
@@ -492,7 +492,7 @@ fn ezr() {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum PeriodeType {
     Bruine,
     Block,
