@@ -47,7 +47,6 @@ fn get_rng_lines(lenght: usize, amount: usize) -> Vec<usize> {
     drained
 }
 
-#[derive(Debug)]
 pub struct Game {
     pub lines: Vec<Line>,
     pub money: u32,
@@ -56,7 +55,8 @@ pub struct Game {
     pub waves: VecDeque<Wave>,
     wave_counter: usize,
     pub god: u32,
-    pub defeat: bool,
+    pub stats: GameStats,
+    no_more_wave: bool,
     turret_list: Rc<Vec<Rc<Turret>>>,
 }
 
@@ -70,7 +70,8 @@ impl Default for Game {
             god: 1,
             waves: VecDeque::new(),
             wave_counter: 0,
-            defeat: false,
+            stats: GameStats::Playing,
+            no_more_wave: false,
             turret_list: Rc::new(vec![
                 Rc::new(Turret::prefab_turret(1).unwrap()),
                 Rc::new(Turret::prefab_turret(2).unwrap()),
@@ -145,23 +146,22 @@ impl Game {
         self.lines[0].wave()
     }
 
-    // Return true if there is not more wave
     #[inline]
-    pub fn start_next_wave(&mut self) -> bool {
+    pub fn start_next_wave(&mut self) {
         if self.is_wave_ended() {
             self.wave_counter += 1;
-            log!("counter:", self.wave_counter);
             if self.wave_counter == 10 {
                 self.unlock_new_turret()
             }
-        }
 
-        self.lines
-            .iter_mut()
-            .map(|line| line.start_next_wave())
-            .collect::<Vec<_>>()
-            .iter()
-            .all(|opt| opt.is_none())
+            self.no_more_wave = self
+                .lines
+                .iter_mut()
+                .map(|line| line.start_next_wave())
+                .collect::<Vec<_>>()
+                .iter()
+                .all(|opt| opt.is_none())
+        }
     }
 
     #[inline]
@@ -189,6 +189,11 @@ impl Game {
     #[inline]
     pub fn is_remaining_enemies(&self) -> bool {
         self.lines.iter().any(|line| line.is_remaining_enemies())
+    }
+
+    #[inline]
+    pub fn have_action(&self) -> bool {
+        self.action.is_some()
     }
 
     pub fn assign_line_for_enemies(&mut self) {
@@ -261,22 +266,37 @@ impl Game {
         }
     }
 
-    pub fn process(&mut self) {
-        if self.god < GOD_CHARGED && self.is_wave_running() {
-            self.god += 1;
+    pub fn pause(&mut self, toggle: bool) {
+        if let GameStats::Pause(ref game_stats) = self.stats {
+            self.stats = game_stats.as_ref().clone();
+        } else if toggle {
+            self.stats = GameStats::Pause(Box::new(self.stats.clone()));
         }
-        // PLAYER WAIT
-        self.player.wait();
-        let result = self
-            .lines
-            .iter_mut()
-            .map(|line| line.process())
-            .collect::<Vec<(u32, bool)>>();
+    }
 
-        let reward = result.iter().map(|r| r.0).sum::<u32>();
-        self.money += reward;
-
-        self.defeat = result.iter().any(|r| r.1);
+    pub fn process(&mut self) {
+        if matches!(self.stats, GameStats::Playing) {
+            if self.god < GOD_CHARGED && self.is_wave_running() {
+                self.god += 1;
+            }
+            // PLAYER WAIT
+            self.player.wait();
+    
+            let result = self
+                .lines
+                .iter_mut()
+                .map(|line| line.process())
+                .collect::<Vec<(u32, bool)>>();
+    
+            let reward = result.iter().map(|r| r.0).sum::<u32>();
+            self.money += reward;
+    
+            if !self.is_remaining_enemies() && self.no_more_wave {
+                self.stats = GameStats::Victory
+            } else if result.iter().any(|r| r.1) {
+                self.stats = GameStats::Defeat
+            }
+        }
     }
 
     pub fn use_god(&mut self) -> bool {
@@ -324,4 +344,12 @@ fn check_x(x: usize) -> bool {
 #[inline]
 fn check_y(y: usize) -> bool {
     y < NBR_OF_LINE
+}
+
+#[derive(Clone, PartialEq)]
+pub enum GameStats {
+    Playing,
+    Victory,
+    Defeat,
+    Pause(Box<GameStats>),
 }

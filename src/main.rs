@@ -5,30 +5,29 @@ mod cheat;
 
 use std::time::Duration;
 
-use yew::{
-    prelude::*,
-    services::{
 use cheat::Cheat;
+use yew::{prelude::*, services::{
         keyboard::{KeyListenerHandle, KeyboardService},
-        DialogService, IntervalService, Task,
-    },
-    utils::window,
-};
+        IntervalService, Task,
+    }, utils::window};
 
 use components::{Footer, FooterProps, Header, HeaderProps};
 use game::{turret::Turret, wave::WAVES, ActionOnBoard, Game};
 
-use crate::components::{Board, GameRow, GameRowProps};
+use crate::{components::{Board, GameRow, GameRowProps, Hover, HoverProps}, game::GameStats};
 
 const FPS: u64 = 30;
 const FRAME_TIME: u64 = 1000 / FPS;
+
 
 enum Msg {
     KeyDown(KeyboardEvent),
     KillAll,
     ExectuteAction(usize, usize),
     NewAction(ActionOnBoard),
+    AbortAction(Option<MouseEvent>),
     NextWave,
+    Pause(bool),
     UpgradePlayer,
     Tick,
 }
@@ -38,8 +37,6 @@ struct Model {
     link: ComponentLink<Self>,
     game: Game,
     show_grid: bool,
-    victory: bool,
-    no_more_wave: bool,
     ticker: Box<dyn Task>,
     input_handler: KeyListenerHandle,
     cheat: Cheat,
@@ -77,10 +74,9 @@ impl Component for Model {
             link,
             game,
             show_grid: false,
-            victory: false,
-            no_more_wave: false,
             ticker: Box::new(ticker),
             input_handler,
+            cheat
         }
     }
 
@@ -88,13 +84,6 @@ impl Component for Model {
         match msg {
             Msg::Tick => {
                 self.game.process();
-                let no_more_enemies = !self.game.is_remaining_enemies();
-                if self.no_more_wave && no_more_enemies {
-                    self.victory = true;
-                    DialogService::alert("GG !")
-                } else if self.game.defeat {
-                    DialogService::alert("DEFEAT :(")
-                }
                 true
             }
             Msg::KeyDown(event) => {
@@ -125,6 +114,11 @@ impl Component for Model {
                         .send_message(Msg::NewAction(ActionOnBoard::Delete)),
                     " " => self.link.send_message(Msg::NextWave),
                     "u" => self.link.send_message(Msg::UpgradePlayer),
+                    "Escape" => if self.game.have_action() {
+                        self.link.send_message(Msg::AbortAction(None)) }
+                        else {
+                            self.link.send_message(Msg::Pause(true))
+                        },
                     _ => (),
                 }
 
@@ -146,6 +140,16 @@ impl Component for Model {
                     false
                 }
             }
+            Msg::AbortAction(event) => {
+                if self.game.action.is_some() {
+                    if let Some(event) = event {
+                        event.prevent_default()
+                    }
+                    self.game.action = None;
+                    self.show_grid = false;
+                }
+                false
+            }
             Msg::NewAction(action) => {
                 if self.game.action.as_ref() == Some(&action) {
                     self.game.action = None;
@@ -163,8 +167,12 @@ impl Component for Model {
                 self.game.upgrade_player();
                 false
             }
+            Msg::Pause(toggle) => {
+                self.game.pause(toggle);
+                false
+            }
             Msg::NextWave => {
-                self.no_more_wave = self.game.start_next_wave();
+                self.game.start_next_wave();
                 false
             }
         }
@@ -175,6 +183,12 @@ impl Component for Model {
     }
 
     fn view(&self) -> Html {
+        let hover_props = HoverProps {
+            game_stats: self.game.stats.clone(),
+            help: matches!(self.game.stats, GameStats::Pause(_)),
+            make_pause: self.link.callback(|_| Msg::Pause(false))
+        };
+
         let header_props = HeaderProps {
             money: self.game.money,
             turrets: self.game.turret_list(),
@@ -190,6 +204,7 @@ impl Component for Model {
                 .link
                 .callback(|turret: Turret| Msg::NewAction(ActionOnBoard::PlaceTurret(turret))),
             upgrade_player: self.link.callback(|_| Msg::UpgradePlayer),
+            make_pause: self.link.callback(|_| Msg::Pause(true)),
         };
 
         let footer_props = FooterProps {
@@ -205,7 +220,8 @@ impl Component for Model {
         };
 
         html! {
-            <>
+            <body oncontextmenu=self.link.callback(|e| Msg::AbortAction(Some(e)))>
+                <Hover with hover_props/>
                 <Header with header_props/>
                 <Board show_grid=self.show_grid>
                     { for self.game.lines.iter().enumerate().map(|(y, line)| {
@@ -235,11 +251,13 @@ impl Component for Model {
                 </Board>
                 <Footer with footer_props>
                 </Footer>
-            </>
+            </body>
         }
     }
 }
 
 fn main() {
-    yew::start_app::<Model>();
+    yew::initialize();
+    yew::App::<Model>::new().mount_as_body();
+    yew::run_loop();
 }

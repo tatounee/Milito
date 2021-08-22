@@ -1,0 +1,56 @@
+
+.hover {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(255, 255, 255, 0.247);
+    z-index: 5;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.hover > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 80vw;
+}
+
+.stats {
+    font-size: 11rem;
+}
+
+
+
+.help-text {
+    padding: 2.5rem;
+    border-radius: 10px;
+    margin: auto;
+    background-color: rgba(202, 202, 202, 0.849);
+    height: fit-content;
+    max-width: 30vw !important;
+}
+
+.help-text > h2 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    cursor: default;
+}
+
+kbd {
+    background-color: #aaa;
+    border: 2px solid #666;
+    border-radius: 5px;
+    padding: 0 4px;
+}
+
+p {
+    font-size: 1.2em;
+    cursor: default;
+}
+
+li {
+    margin-top: 0.7rem;
+    cursor: default;
+}

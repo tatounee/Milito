@@ -14,6 +14,7 @@ pub struct HeaderProps {
     pub upgrade_cost_text: Rc<String>,
     pub on_turret_selected: Callback<Turret>,
     pub upgrade_player: Callback<()>,
+    pub make_pause: Callback<()>
 }
 
 pub struct Header {
@@ -24,6 +25,7 @@ pub struct Header {
 pub enum Msg {
     TurretSelected(Turret),
     UpgradePlayer,
+    Pause,
 }
 
 impl Component for Header {
@@ -47,6 +49,7 @@ impl Component for Header {
         match msg {
             Msg::TurretSelected(t) => self.props.on_turret_selected.emit(t),
             Msg::UpgradePlayer => self.props.upgrade_player.emit(()),
+            Msg::Pause => self.props.make_pause.emit(()),
         }
         false
     }
@@ -85,7 +88,7 @@ impl Component for Header {
                     <div class=classes!("sold")>
                         { self.props.money }
                     </div>
-                    <div class=classes!("help")>
+                    <div class="help" onclick=self.link.callback(|_| Msg::Pause)>
                         { "?" }
                     </div>
                 </div>
