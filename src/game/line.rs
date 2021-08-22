@@ -262,7 +262,7 @@ impl Line {
                     }
                 }) {
                     enemy.deplace();
-                    if enemy.x() < -5. {
+                    if enemy.x() < -10. {
                         defeat = true;
                     }
                 }

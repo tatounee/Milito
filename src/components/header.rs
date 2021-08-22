@@ -14,7 +14,7 @@ pub struct HeaderProps {
     pub upgrade_cost_text: Rc<String>,
     pub on_turret_selected: Callback<Turret>,
     pub upgrade_player: Callback<()>,
-    pub make_pause: Callback<()>
+    pub make_pause: Callback<()>,
 }
 
 pub struct Header {
@@ -56,9 +56,9 @@ impl Component for Header {
 
     fn view(&self) -> Html {
         html! {
-            <div class=classes!("shop")>
-                <div class=classes!("buy")>
-                    <div class=classes!("upgrade")>
+            <div class="shop">
+                <div class="buy">
+                    <div class="upgrade">
                         <Card<()>
                             onclick=self.link.callback(|_| Msg::UpgradePlayer)
                             level=self.props.player_level
@@ -84,8 +84,8 @@ impl Component for Header {
                         }}) }
                     </div>
                 </div>
-                <div class=classes!("data")>
-                    <div class=classes!("sold")>
+                <div class="data">
+                    <div class="sold">
                         { self.props.money }
                     </div>
                     <div class="help" onclick=self.link.callback(|_| Msg::Pause)>

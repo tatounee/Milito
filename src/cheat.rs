@@ -1,10 +1,8 @@
-use crate::log;
-
 
 pub struct Cheat {
     password: Vec<char>,
     password_ptr: usize,
-    active: bool
+    active: bool,
 }
 
 impl Cheat {
@@ -14,7 +12,7 @@ impl Cheat {
         let mut cheat = Self {
             password: password.chars().collect(),
             password_ptr: 0,
-            active: false
+            active: false,
         };
 
         cheat.active = no_password;

@@ -148,9 +148,7 @@ impl Wave {
                 acc
             });
 
-        troops.map(|troops| {
-            Self { troops }
-        })
+        troops.map(|troops| Self { troops })
     }
 }
 
@@ -406,7 +404,8 @@ impl WavePerioded {
                     if *quantity == 0 {
                         levels.remove(idx);
                     }
-                    let mut position = (rng() * periode.duration.duration as f64 * FPS as f64).floor() as u64
+                    let mut position = (rng() * periode.duration.duration as f64 * FPS as f64)
+                        .floor() as u64
                         + periode.duration.start as u64;
                     let mut echec = false;
                     let mut pass = 0;

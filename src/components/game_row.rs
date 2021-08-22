@@ -50,7 +50,6 @@ impl Component for GameRow {
     }
 
     fn view(&self) -> Html {
-        // TODO: don't disaeble is delete_mode
         let player = if let Some(level) = self.props.player_level {
             let player_classes = format!("player-img level{}-128 free", level);
             html_nested!(

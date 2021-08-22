@@ -281,16 +281,16 @@ impl Game {
             }
             // PLAYER WAIT
             self.player.wait();
-    
+
             let result = self
                 .lines
                 .iter_mut()
                 .map(|line| line.process())
                 .collect::<Vec<(u32, bool)>>();
-    
+
             let reward = result.iter().map(|r| r.0).sum::<u32>();
             self.money += reward;
-    
+
             if !self.is_remaining_enemies() && self.no_more_wave {
                 self.stats = GameStats::Victory
             } else if result.iter().any(|r| r.1) {

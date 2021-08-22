@@ -1,24 +1,30 @@
+mod cheat;
 mod components;
 mod game;
 mod utils;
-mod cheat;
 
 use std::time::Duration;
 
 use cheat::Cheat;
-use yew::{prelude::*, services::{
+use yew::{
+    prelude::*,
+    services::{
         keyboard::{KeyListenerHandle, KeyboardService},
         IntervalService, Task,
-    }, utils::window};
+    },
+    utils::window,
+};
 
 use components::{Footer, FooterProps, Header, HeaderProps};
 use game::{turret::Turret, wave::WAVES, ActionOnBoard, Game};
 
-use crate::{components::{Board, GameRow, GameRowProps, Hover, HoverProps}, game::GameStats};
+use crate::{
+    components::{Board, GameRow, GameRowProps, Hover, HoverProps},
+    game::GameStats,
+};
 
 const FPS: u64 = 30;
 const FRAME_TIME: u64 = 1000 / FPS;
-
 
 enum Msg {
     KeyDown(KeyboardEvent),
@@ -76,7 +82,7 @@ impl Component for Model {
             show_grid: false,
             ticker: Box::new(ticker),
             input_handler,
-            cheat
+            cheat,
         }
     }
 
@@ -114,11 +120,13 @@ impl Component for Model {
                         .send_message(Msg::NewAction(ActionOnBoard::Delete)),
                     " " => self.link.send_message(Msg::NextWave),
                     "u" => self.link.send_message(Msg::UpgradePlayer),
-                    "Escape" => if self.game.have_action() {
-                        self.link.send_message(Msg::AbortAction(None)) }
-                        else {
+                    "Escape" => {
+                        if self.game.have_action() {
+                            self.link.send_message(Msg::AbortAction(None))
+                        } else {
                             self.link.send_message(Msg::Pause(true))
-                        },
+                        }
+                    }
                     _ => (),
                 }
 
@@ -186,7 +194,7 @@ impl Component for Model {
         let hover_props = HoverProps {
             game_stats: self.game.stats.clone(),
             help: matches!(self.game.stats, GameStats::Pause(_)),
-            make_pause: self.link.callback(|_| Msg::Pause(false))
+            make_pause: self.link.callback(|_| Msg::Pause(false)),
         };
 
         let header_props = HeaderProps {

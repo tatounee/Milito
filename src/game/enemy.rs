@@ -163,7 +163,6 @@ impl PartialOrd for Enemy {
 
 impl Ord for Enemy {
     fn cmp(&self, other: &Self) -> Ordering {
-        // We can have a NaN number so it's safe to unwrap
         self.x.partial_cmp(&other.x).unwrap()
     }
 }

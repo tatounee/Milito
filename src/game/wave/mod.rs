@@ -88,24 +88,3 @@ impl IntoIterator for WaveLine {
         }
     }
 }
-
-fn print_wave(wave: &Wave) {
-    let mut keys = wave.troops.keys().collect::<Vec<_>>();
-    keys.sort_unstable();
-
-    for key in keys {
-        println!("{} => {:?}", key / FPS, wave.troops[key])
-    }
-}
-
-#[test]
-fn er() {
-    // let t1 = std::time::Instant::now();
-    // for i in 10..21 {
-    let gen = Wave::generate(15);
-    print_wave(&gen);
-    // }
-    // let t2 = std::time::Instant::now();
-    // println!("Time: {:?}", t2 - t1);
-    // print_wave(&gen);
-}
