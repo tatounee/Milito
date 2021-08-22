@@ -62,6 +62,7 @@ impl Component for Hover {
                             <li> <kbd title="The keys above your letters, not the numerical keypad" style="cursor: help;">{"1..6"}</kbd> {" to buy a new turret"}</li>
                             <li><kbd>{"Esc"}</kbd> {" or "} <kbd>{"Right click"}</kbd> {" to abort the current action"}</li>
                         </ul>
+                        <p>{"Made with ♥ by "} <a href="https://github.com/tatounee/milito" target="_blank" >{"Tatoune"}</a> {"."}</p>
                     </div>
                 </div>
             },
