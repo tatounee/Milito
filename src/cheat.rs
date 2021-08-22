@@ -1,4 +1,3 @@
-
 pub struct Cheat {
     password: Vec<char>,
     password_ptr: usize,
