@@ -1,12 +1,14 @@
 mod components;
 mod game;
 mod utils;
+mod cheat;
 
 use std::time::Duration;
 
 use yew::{
     prelude::*,
     services::{
+use cheat::Cheat;
         keyboard::{KeyListenerHandle, KeyboardService},
         DialogService, IntervalService, Task,
     },
@@ -40,6 +42,7 @@ struct Model {
     no_more_wave: bool,
     ticker: Box<dyn Task>,
     input_handler: KeyListenerHandle,
+    cheat: Cheat,
 }
 
 #[derive(Debug, Properties, Clone)]
@@ -68,6 +71,8 @@ impl Component for Model {
         game.generate_waves(10);
         game.assign_line_for_enemies();
 
+        let cheat = Cheat::new("ilovetatoune");
+
         Self {
             link,
             game,
@@ -92,10 +97,11 @@ impl Component for Model {
                 }
                 true
             }
-            Msg::KeyDown(key) => {
-                let code = key.code();
+            Msg::KeyDown(event) => {
+                let code = event.code();
+                let key = event.key();
                 if code.len() == 6 && &code[0..5] == "Digit" {
-                    key.prevent_default();
+                    event.prevent_default();
                     if let Ok(nbr) = code[5..6].parse::<usize>() {
                         if let Some(turret) = self.game.turret_list().get(nbr.saturating_sub(1)) {
                             self.link
@@ -106,11 +112,11 @@ impl Component for Model {
                     }
                 };
 
-                match key.key().as_str() {
+                match key.as_str() {
                     "ArrowUp" => self.game.move_player_up(),
                     "ArrowRight" => self.game.player_shoot(),
                     "ArrowDown" => self.game.move_player_down(),
-                    "s" => self.game.skip_one_wave(),
+                    "s" if self.cheat.is_active() => self.game.skip_one_wave(),
                     "g" => {
                         self.game.use_god();
                     }
@@ -121,6 +127,11 @@ impl Component for Model {
                     "u" => self.link.send_message(Msg::UpgradePlayer),
                     _ => (),
                 }
+
+                if key.len() == 1 {
+                    self.cheat.type_key(key.chars().next().unwrap())
+                }
+
                 false
             }
             Msg::KillAll => {
