@@ -155,12 +155,9 @@ impl Game {
                 self.unlock_new_turret()
             }
 
-            self
-                .lines
-                .iter_mut()
-                .for_each(|line| {
-                    line.start_next_wave();
-                })
+            self.lines.iter_mut().for_each(|line| {
+                line.start_next_wave();
+            })
         }
     }
 

@@ -79,7 +79,6 @@ impl Periode {
     fn power(&self) -> f32 {
         self.difficulty / self.duration.duration
     }
-
 }
 
 #[derive(Debug, Clone)]
@@ -91,8 +90,7 @@ struct Duration {
 impl Duration {
     #[inline]
     fn get_new_position(&self) -> u64 {
-        let position_relative =
-        (rng() * self.duration as f64 * FPS as f64).floor() as u64;
+        let position_relative = (rng() * self.duration as f64 * FPS as f64).floor() as u64;
         position_relative + self.start as u64 * FPS
     }
 }

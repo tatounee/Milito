@@ -75,7 +75,11 @@ impl Component for Model {
         game.generate_waves(5);
         game.assign_line_for_enemies();
 
-        let cheat = Cheat::new(if cfg!(debug_assertions) {""} else {"ilovetatoune"});
+        let cheat = Cheat::new(if cfg!(debug_assertions) {
+            ""
+        } else {
+            "ilovetatoune"
+        });
 
         Self {
             link,
@@ -100,7 +104,8 @@ impl Component for Model {
                     if code.len() == 6 && &code[0..5] == "Digit" {
                         event.prevent_default();
                         if let Ok(nbr) = code[5..6].parse::<usize>() {
-                            if let Some(turret) = self.game.turret_list().get(nbr.saturating_sub(1)) {
+                            if let Some(turret) = self.game.turret_list().get(nbr.saturating_sub(1))
+                            {
                                 self.link
                                     .send_message(Msg::NewAction(ActionOnBoard::PlaceTurret(
                                         turret.as_ref().clone(),
@@ -108,7 +113,7 @@ impl Component for Model {
                             }
                         }
                     };
-    
+
                     match key.as_str() {
                         "ArrowUp" => self.game.move_player_up(),
                         "ArrowRight" => self.game.player_shoot(),
@@ -135,11 +140,8 @@ impl Component for Model {
                     if self.cheat.is_active() && key == "+" {
                         self.link.send_message(Msg::MoreWave(1))
                     }
-                } else {
-
-                    if key.as_str() == "Escape" {
-                        self.link.send_message(Msg::Pause(false))
-                    }
+                } else if key.as_str() == "Escape" {
+                    self.link.send_message(Msg::Pause(false))
                 }
 
                 if key.len() == 1 {
@@ -212,7 +214,7 @@ impl Component for Model {
         let hover_props = HoverProps {
             game_stats: self.game.stats.clone(),
             make_pause: self.link.callback(|_| Msg::Pause(false)),
-            more_wave: self.link.callback(|amount| Msg::MoreWave(amount)),
+            more_wave: self.link.callback(Msg::MoreWave),
         };
 
         let header_props = HeaderProps {

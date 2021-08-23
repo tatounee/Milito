@@ -38,8 +38,14 @@ impl Component for Hover {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::Unpause => {self.props.make_pause.emit(()); false},
-            Msg::MoreWave(amount) => {self.props.more_wave.emit(amount); true},
+            Msg::Unpause => {
+                self.props.make_pause.emit(());
+                false
+            }
+            Msg::MoreWave(amount) => {
+                self.props.more_wave.emit(amount);
+                true
+            }
         }
     }
 
@@ -73,16 +79,16 @@ impl Component for Hover {
                         <div class="stats">{if matches!(x, GameStats::Victory) { "Victory"} else { "Defeat" }}</div>
                         <p>
                         {"If you want to replay, press " } <kbd> { "F5" } </kbd> { " or reload the page." } <br/>
-                        { if matches!(x, GameStats::Victory) { 
+                        { if matches!(x, GameStats::Victory) {
                             html_nested! { <> <br/>
-                                { "PS: I will tell you a secret, you can active a cheat mode by typing \"ilovetatoune\" and then, you can skip a wave if you press " } <kbd> { "S" } </kbd> { " when no wave is running." } 
+                                { "PS: I will tell you a secret, you can active a cheat mode by typing \"ilovetatoune\" and then, you can skip a wave if you press " } <kbd> { "S" } </kbd> { " when no wave is running." }
                                 </>}
                         } else {
                             html_nested! {}
                         }}
                         </p>
                         { if matches!(x, GameStats::Victory) {
-                            html_nested! { 
+                            html_nested! {
                                 <button class="more-wave" onclick=self.link.callback(|_| Msg::MoreWave(1))>{"I want to play one more wave !"}</button> }
                         } else {
                             html_nested! {}
