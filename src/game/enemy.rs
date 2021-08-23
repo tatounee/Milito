@@ -78,16 +78,6 @@ impl Enemy {
     }
 
     #[inline]
-    pub fn is_attacking(&self) -> bool {
-        self.waiting + 1. < self.attack_waiting
-    }
-
-    #[inline]
-    pub fn attack_duration(&self) -> f32 {
-        self.attack_waiting / (2 * FPS) as f32
-    }
-
-    #[inline]
     pub fn x(&self) -> f32 {
         self.x
     }
@@ -154,6 +144,12 @@ impl Enemy {
     #[inline]
     pub fn max_life(&self) -> f32 {
         self.max_life
+    }
+
+    #[inline]
+    pub fn css_transform(&self) -> String {
+        let x_shift = -20. * (1. -  2. * self.waiting / self.attack_waiting).max(0.);
+        format!("transform:matrix({scale},0.00,0.00,{scale},{x_shift},0);", scale = self.scale(), x_shift = x_shift)
     }
 }
 

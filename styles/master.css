@@ -119,10 +119,6 @@ body {
     animation: move-y 1s steps(16) infinite;
 }
 
-.attack {
-    animation: enemy-attack 0.5s;
-}
-
 @keyframes move-y {
     from {
         background-position-y: 0px;
@@ -130,16 +126,6 @@ body {
 
     to {
         background-position-y: -512px;
-    }
-}
-
-
-@keyframes enemy-attack {
-    from {
-        transform: translateX(-20px);
-    } 
-    to {
-        transform: translateX(0);
     }
 }
 

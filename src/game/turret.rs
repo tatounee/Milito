@@ -39,7 +39,7 @@ impl Turret {
             shoot,
             life,
             hitbox,
-            waiting: 0.,
+            waiting: attack_waiting / 2.,
             attack_waiting,
         }
     }
