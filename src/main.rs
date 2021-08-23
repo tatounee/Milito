@@ -100,9 +100,6 @@ impl Component for Model {
                     if code.len() == 6 && &code[0..5] == "Digit" {
                         event.prevent_default();
                         if let Ok(nbr) = code[5..6].parse::<usize>() {
-                            if nbr == 7 {
-                                self.link.send_message(Msg::MoreWave(2 as u32));
-                            }
                             if let Some(turret) = self.game.turret_list().get(nbr.saturating_sub(1)) {
                                 self.link
                                     .send_message(Msg::NewAction(ActionOnBoard::PlaceTurret(
@@ -133,6 +130,10 @@ impl Component for Model {
                             }
                         }
                         _ => (),
+                    }
+
+                    if self.cheat.is_active() && key == "+" {
+                        self.link.send_message(Msg::MoreWave(1))
                     }
                 } else {
 
