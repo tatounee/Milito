@@ -78,8 +78,8 @@ impl Component for GameRow {
                     }
                 }) }
                 { for self.props.enemies.borrow().iter().map(|enemy| {
-                    let enemy_classes = format!("enemy-img level{}-128 free", enemy.level());
-                    let enemy_datas = format!("left: {}%; transform: scale({})", enemy.x(), enemy.scale());
+                    let enemy_classes = format!("enemy-img level{}-128 free {}", enemy.level(), if enemy.is_attacking() { "attack" } else { "" });
+                    let enemy_datas = format!("left: {}%; transform: scale({}); {}", enemy.x(), enemy.scale(), if enemy.is_attacking() { format!("animation-duration: {}", enemy.attack_duration()) } else { "".to_owned() });
                     html_nested! {
                         <div class=classes!(enemy_classes) style=enemy_datas/>
                     }

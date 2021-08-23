@@ -72,9 +72,19 @@ impl Enemy {
             reward,
             speed: speed / FPS as f32,
             hitbox,
-            waiting: 0.,
+            waiting: attack_waiting * FPS as f32,
             attack_waiting: attack_waiting * FPS as f32,
         }
+    }
+
+    #[inline]
+    pub fn is_attacking(&self) -> bool {
+        self.waiting + 1. < self.attack_waiting
+    }
+
+    #[inline]
+    pub fn attack_duration(&self) -> f32 {
+        self.attack_waiting / (2 * FPS) as f32
     }
 
     #[inline]
