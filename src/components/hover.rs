@@ -83,7 +83,7 @@ impl Component for Hover {
                         </p>
                         { if matches!(x, GameStats::Victory) {
                             html_nested! { 
-                                <button class="more-wave" onclick=self.link.callback(|_| Msg::MoreWave(5))>{"I want to play 5 more wave !"}</button> }
+                                <button class="more-wave" onclick=self.link.callback(|_| Msg::MoreWave(1))>{"I want to play one more wave !"}</button> }
                         } else {
                             html_nested! {}
                         }}
