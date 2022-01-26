@@ -1,5 +1,5 @@
 #![allow(unused_imports)]
-
+// Bug: god + projectile = bug
 pub mod components;
 pub mod enemy;
 pub mod line;
